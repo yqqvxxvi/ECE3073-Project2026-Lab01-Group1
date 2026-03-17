@@ -12,7 +12,7 @@ Real-Time Embedded Vision Using Arm – Grove AI V2 and NIOS based Multitasking 
 |------|-----------|------------|--------------|
 | 1 | You Qing Liew | 33590400 | ylie0025@student.monash.edu |
 | 2 | Melvin | [Fill in your student ID] | [Fill in your Monash email] |
-| 3 | Zhi Hang | [Fill in your student ID] | [Fill in your Monash email] |
+| 3 | Zhi Hang | [33524513] | [zteh0010@student.monash.edu] |
 | 4 | [Name] | [Fill in your student ID] | [Fill in your Monash email] |
 
 
