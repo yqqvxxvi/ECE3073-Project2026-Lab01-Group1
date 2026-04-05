@@ -1,0 +1,21 @@
+# Quartus compilation files, after compilation, these files are generated and not needed to be tracked by git
+# Quartus generated files
+db/
+incremental_db/
+
+# Reports & logs
+*.rpt
+*.summary
+*.log
+
+# Temporary / cache
+*.bak
+*.jdi
+*.smsg
+*.qdb
+*.ddb
+*.flock
+
+# User-specific settings
+*.qsf.user
+*.qws
