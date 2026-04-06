@@ -12,9 +12,12 @@ volatile int *HEX5 = (int *)0x04001000;
 int main()
 {
     // hex_test();
-    hex_test_count();
+    // hex_test_count();
 
-    while (1);
+    while (1)
+    {
+    	hex_test_alpha_scrolling("HELLO WORLD");
 
-    return 0;
+        usleep(100000); // Sleep for a while to see the result
+    }
 }

@@ -1,5 +1,7 @@
 #include "system.h"
 #include "unistd.h"
+#include <stdint.h>
+#include <string.h>
 #include "hex.h"
 
 extern volatile int *HEX0;
@@ -22,6 +24,57 @@ unsigned char seg_code[10] = {
     0x80, // 8 (bin = 10000000)
     0x90  // 9 (bin = 10010000)
 };
+
+// Common readable letters for 7-seg display
+uint8_t alpha_lut[26] = {
+    0x88, // A
+    0x83, // B  (looks like b)
+    0xC6, // C
+    0xA1, // D  (looks like d)
+    0x86, // E
+    0x8E, // F
+    0xC2, // G
+    0x89, // H
+    0xCF, // I
+    0xE1, // J
+    0x8A, // K  (approximation)
+    0xC7, // L
+    0xAA, // M  (approximation)
+    0xAB, // N  (approximation)
+    0xC0, // O
+    0x8C, // P
+    0x98, // Q  (approximation)
+    0xAF, // R  (approximation)
+    0x92, // S
+    0x87, // T
+    0xC1, // U
+    0xE3, // V  (approximation)
+    0x81, // W  (approximation)
+    0x89, // X  (same-ish as H)
+    0x91, // Y
+    0xA4  // Z  (same-ish as 2)
+};
+
+int decode_alpha_to_7seg(char c)
+{
+    if (c >= 'A' && c <= 'Z') {
+        return alpha_lut[c - 'A'];
+    } else if (c >= 'a' && c <= 'z') {
+        return alpha_lut[c - 'a'];
+    } else {
+        return 0xFF; // Blank for unsupported characters
+    }
+}
+
+void hex_write_all(int h5, int h4, int h3, int h2, int h1, int h0)
+{
+    *HEX5 = h5;
+    *HEX4 = h4;
+    *HEX3 = h3;
+    *HEX2 = h2;
+    *HEX1 = h1;
+    *HEX0 = h0;
+}
 
 int hex_test_show(void)
 {
@@ -55,6 +108,40 @@ int hex_test_count(void)
         *HEX0 = seg_code[num % 10]; // Get the ones digit
 
         usleep(10000); // Sleep
+    }
+
+    return 0;
+}
+
+// ALPHABET
+
+int hex_test_alpha_scrolling(char *str)
+{
+    int len = strlen(str);
+
+    uint8_t d5 = 0xFF, d4 = 0xFF, d3 = 0xFF, d2 = 0xFF, d1 = 0xFF, d0 = 0xFF;
+
+    for (int i = 0; i < len + 6; i++) {
+        char c;
+
+        if (i < len)
+            c = str[i];
+        else
+            c = ' ';   // push blanks after string ends
+
+        uint8_t new_char = decode_alpha_to_7seg(c);
+
+        // shift to the left so new characters enter from the right
+        d5 = d4;
+        d4 = d3;
+        d3 = d2;
+        d2 = d1;
+        d1 = d0;
+        d0 = new_char;
+
+        hex_write_all(d5, d4, d3, d2, d1, d0);
+
+        usleep(200000);   // 0.2s, easier to see
     }
 
     return 0;
