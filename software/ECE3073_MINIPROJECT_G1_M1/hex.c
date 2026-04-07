@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "hex.h"
+#include "utils.h"
 
 extern volatile int *HEX0;
 extern volatile int *HEX1;
@@ -107,7 +108,7 @@ int hex_test_count(void)
         *HEX1 = seg_code[num / 10]; // Get the tens digit
         *HEX0 = seg_code[num % 10]; // Get the ones digit
 
-        usleep(10000); // Sleep
+        delay(50000); // Adjust delay for visible counting speed
     }
 
     return 0;
@@ -141,7 +142,7 @@ int hex_test_alpha_scrolling(char *str)
 
         hex_write_all(d5, d4, d3, d2, d1, d0);
 
-        usleep(200000);   // 0.2s, easier to see
+        delay(100000);   // 0.2s, easier to see
     }
 
     return 0;

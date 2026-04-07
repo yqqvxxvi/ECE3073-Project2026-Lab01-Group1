@@ -7,6 +7,7 @@
 #include "hex.h"
 #include "sw.h"
 #include "uart_phrases.h"
+#include "utils.h"
 
 #ifndef PIO_7_BASE
 #define PIO_7_BASE 0x4001010
