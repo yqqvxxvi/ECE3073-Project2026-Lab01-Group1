@@ -407,7 +407,7 @@ refer to the applicable agreement for further details.
 		(line (pt 98 12)(pt 94 8))
 	)
 	(flipy)
-	(annotation_block (location)(rect 408 784 480 808))
+	(annotation_block (location)(rect 480 808 552 832))
 )
 (pin
 	(output)
@@ -527,7 +527,7 @@ refer to the applicable agreement for further details.
 	)
 )
 (symbol
-	(rect 728 56 1224 816)
+	(rect 752 56 1248 816)
 	(text "NIOSII_MINIPROJECT_G1" (rect 172 -1 352 15)(font "Arial" (font_size 10)))
 	(text "inst" (rect 8 744 25 756)(font "Arial" ))
 	(port
@@ -790,117 +790,117 @@ refer to the applicable agreement for further details.
 	(pt -32 120)
 )
 (connector
-	(pt 728 376)
-	(pt 640 376)
-	(bus)
-)
-(connector
-	(pt 728 416)
-	(pt 640 416)
-	(bus)
-)
-(connector
-	(pt 728 456)
-	(pt 640 456)
-	(bus)
-)
-(connector
-	(pt 728 496)
-	(pt 640 496)
-	(bus)
-)
-(connector
-	(pt 728 536)
-	(pt 640 536)
-	(bus)
-)
-(connector
-	(pt 728 576)
-	(pt 640 576)
-	(bus)
-)
-(connector
-	(pt 728 616)
-	(pt 648 616)
-	(bus)
-)
-(connector
-	(pt 648 656)
-	(pt 728 656)
-	(bus)
-)
-(connector
-	(pt 656 696)
-	(pt 728 696)
-	(bus)
-)
-(connector
-	(pt 728 736)
-	(pt 656 736)
-)
-(connector
-	(pt 728 752)
-	(pt 656 752)
-)
-(connector
-	(pt 728 768)
-	(pt 656 768)
-)
-(connector
-	(pt 728 784)
-	(pt 656 784)
-	(bus)
-)
-(connector
-	(pt 656 184)
-	(pt 728 184)
-	(bus)
-)
-(connector
-	(pt 656 248)
-	(pt 728 248)
-	(bus)
-)
-(connector
-	(pt 656 168)
-	(pt 728 168)
-	(bus)
-)
-(connector
-	(pt 656 200)
-	(pt 728 200)
-)
-(connector
-	(pt 728 216)
-	(pt 656 216)
-)
-(connector
-	(pt 656 232)
-	(pt 728 232)
-)
-(connector
-	(pt 656 264)
-	(pt 728 264)
-	(bus)
-)
-(connector
-	(pt 728 280)
-	(pt 656 280)
-)
-(connector
-	(pt 656 296)
-	(pt 728 296)
-)
-(connector
 	(pt 648 128)
 	(pt 656 128)
 )
 (connector
 	(pt 656 128)
-	(pt 728 128)
+	(pt 752 128)
 )
 (connector
-	(pt 728 336)
 	(pt 656 336)
+	(pt 752 336)
+)
+(connector
+	(pt 648 616)
+	(pt 752 616)
+	(bus)
+)
+(connector
+	(pt 656 696)
+	(pt 752 696)
+	(bus)
+)
+(connector
+	(pt 656 736)
+	(pt 752 736)
+)
+(connector
+	(pt 656 168)
+	(pt 752 168)
+	(bus)
+)
+(connector
+	(pt 656 184)
+	(pt 752 184)
+	(bus)
+)
+(connector
+	(pt 656 200)
+	(pt 752 200)
+)
+(connector
+	(pt 656 216)
+	(pt 752 216)
+)
+(connector
+	(pt 656 232)
+	(pt 752 232)
+)
+(connector
+	(pt 656 264)
+	(pt 752 264)
+	(bus)
+)
+(connector
+	(pt 656 280)
+	(pt 752 280)
+)
+(connector
+	(pt 656 296)
+	(pt 752 296)
+)
+(connector
+	(pt 640 376)
+	(pt 752 376)
+	(bus)
+)
+(connector
+	(pt 640 416)
+	(pt 752 416)
+	(bus)
+)
+(connector
+	(pt 640 456)
+	(pt 752 456)
+	(bus)
+)
+(connector
+	(pt 640 496)
+	(pt 752 496)
+	(bus)
+)
+(connector
+	(pt 640 536)
+	(pt 752 536)
+	(bus)
+)
+(connector
+	(pt 640 576)
+	(pt 752 576)
+	(bus)
+)
+(connector
+	(pt 648 656)
+	(pt 752 656)
+	(bus)
+)
+(connector
+	(pt 656 752)
+	(pt 752 752)
+)
+(connector
+	(pt 656 768)
+	(pt 752 768)
+)
+(connector
+	(pt 656 784)
+	(pt 752 784)
+	(bus)
+)
+(connector
+	(pt 656 248)
+	(pt 752 248)
+	(bus)
 )
 (junction (pt 656 128))
