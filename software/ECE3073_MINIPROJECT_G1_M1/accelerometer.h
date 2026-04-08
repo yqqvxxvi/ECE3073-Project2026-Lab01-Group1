@@ -9,8 +9,9 @@
 #define ADXL345_READ      0x80  /* bit 7: 1 = read, 0 = write      */
 #define ADXL345_MULTIBYTE 0x40  /* bit 6: 1 = multi-byte transfer   */
 
-/* SPI slave index for alt_avalon_spi_command (0-indexed, not one-hot) */
-#define ADXL345_SLAVE     0
+/* SPI slave index for alt_avalon_spi_command (0-indexed, not one-hot).
+ * Change to 1 if the accelerometer is wired to CS1 instead of CS0. */
+#define ADXL345_SLAVE     1
 
 /* =========================================================
  * ADXL345 register addresses

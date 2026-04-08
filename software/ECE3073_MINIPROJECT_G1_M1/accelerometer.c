@@ -2,6 +2,7 @@
 #include "system.h"
 #include <altera_avalon_spi.h>
 #include <stdint.h>
+#include <stdio.h>
 
 /* =========================================================
  * SPI transfer helpers
@@ -78,17 +79,21 @@ void accelerometer_read_xyz(int16_t *x, int16_t *y, int16_t *z)
  * ========================================================= */
 void accelerometer_init(void)
 {
+    /* Verify SPI is working: DEVID register always returns 0xE5 on ADXL345 */
+    uint8_t devid = accelerometer_read_reg(ADXL345_REG_DEVID);
+    printf("ADXL345 DEVID: 0x%02X (expect 0xE5)\n", devid);
+
     /* Standby mode before reconfiguring */
     accelerometer_write_reg(ADXL345_REG_POWER_CTL, 0x00);
 
     /* Tap detection axes: enable X, Y and Z */
     accelerometer_write_reg(ADXL345_REG_TAP_AXES, 0x07);
 
-    /* Tap threshold: 2 g */
-    accelerometer_write_reg(ADXL345_REG_THRESH_TAP, 0x20);
+    /* Tap threshold: 3 g (0x30 = 48 * 62.5 mg) - firm tap required */
+    accelerometer_write_reg(ADXL345_REG_THRESH_TAP, 0x30);
 
-    /* Max tap duration: 10 ms */
-    accelerometer_write_reg(ADXL345_REG_DUR, 0x10);
+    /* Max tap duration: 20 ms (0x20 = 32 * 625 us) - widened to catch lighter taps */
+    accelerometer_write_reg(ADXL345_REG_DUR, 0x20);
 
     /* Double-tap latency: 100 ms */
     accelerometer_write_reg(ADXL345_REG_LATENT, 0x50);

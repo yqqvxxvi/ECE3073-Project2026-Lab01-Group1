@@ -14,3 +14,8 @@ void delay_ms(uint32_t count)
         /* busy wait */
     }
 }
+
+void delay_s(uint32_t seconds)
+{
+    delay_ms(seconds * 1000);
+}
