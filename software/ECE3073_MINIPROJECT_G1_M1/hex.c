@@ -108,7 +108,7 @@ int hex_test_count(void)
         *HEX1 = seg_code[num / 10]; // Get the tens digit
         *HEX0 = seg_code[num % 10]; // Get the ones digit
 
-        delay(50000); // Adjust delay for visible counting speed
+        delay_ms(50000); // Adjust delay for visible counting speed
     }
 
     return 0;
@@ -142,7 +142,7 @@ int hex_test_alpha_scrolling(char *str)
 
         hex_write_all(d5, d4, d3, d2, d1, d0);
 
-        delay(100000);   // 0.2s, easier to see
+        delay_ms(200);   // 0.2s, easier to see
     }
 
     return 0;

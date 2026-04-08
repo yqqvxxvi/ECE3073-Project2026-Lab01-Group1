@@ -1,17 +1,16 @@
-#include "system.h"
-#include "unistd.h"
-#include <stdint.h>
-#include <string.h>
+#include "utils.h"
+#include "interrupt_handler.h"  /* for extern volatile int ms_ticks */
 
-
-void delay(int count)
+/*
+ * Busy-wait delay using the 1 ms hardware tick from timer_0 ISR.
+ * Interrupts remain enabled during the wait, so ms_ticks keeps advancing.
+ * Cast to uint32_t so subtraction wraps correctly after rollover.
+ */
+void delay_ms(uint32_t count)
 {
-    for (int i = 0; i < count; i++) {
-        // 50Mhz clock, 20ns per cycle, so 50 million cycles is 1 second
-        // do something that takes 20ns, like a volatile read
-        // this is to avoid interrupt dies on usleep
-        volatile int *dummy = (int *)0x0; // read from an arbitrary address
-        
+    uint32_t start = (uint32_t)ms_ticks;
+    while (((uint32_t)ms_ticks - start) < count)
+    {
+        /* busy wait */
     }
 }
-

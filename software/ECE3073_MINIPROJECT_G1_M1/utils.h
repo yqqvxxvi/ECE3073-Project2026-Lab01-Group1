@@ -1,6 +1,8 @@
-#ifndef UTILS
-#define UTILS
+#ifndef UTILS_H
+#define UTILS_H
 
-void delay(int count);
+#include <stdint.h>
 
-#endif
+void delay_ms(uint32_t count);
+
+#endif /* UTILS_H */
