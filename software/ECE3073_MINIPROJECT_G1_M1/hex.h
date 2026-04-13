@@ -13,5 +13,6 @@ int hex_test_count(void);
 int hex_test_alpha_scrolling(char *str);
 int decode_alpha_to_7seg(char c);
 void hex_write_all(int h5, int h4, int h3, int h2, int h1, int h0);
+void hex_show_digit(int digit);  /* show single digit 0-9 on HEX0 */
 
 #endif

@@ -1,7 +1,6 @@
 #include "system.h"
 #include "unistd.h"
 #include "io.h"
-#include <stdio.h>
 
 /* Module headers */
 #include "hex.h"
@@ -9,48 +8,35 @@
 #include "uart_phrases.h"
 #include "utils.h"
 #include "interrupt_handler.h"
-#include "accelerometer.h"
-
-
-/*============= FALL BACK BASE ADDRESSES =============*/
-#ifndef PIO_7_BASE
-#define PIO_7_BASE 0x4001060
-#endif
-
-#ifndef PIO_8_BASE
-#define PIO_8_BASE 0x4001050
-#endif
-
-#ifndef TIMER_0_BASE
-#define TIMER_0_BASE 0x4001000
-#endif
-
-#ifndef SPI_0_BASE
-#define SPI_0_BASE 0x4001020
-#endif
-
+#include "nios2_ctrl_reg_macros.h"
 
 /*============= BASE ADDRESSES =============*/
-volatile int *LEDS  = (int *)PIO_0_BASE;
-volatile int *HEX0  = (int *)PIO_1_BASE;
-volatile int *HEX1  = (int *)PIO_2_BASE;
-volatile int *HEX2  = (int *)PIO_3_BASE;
-volatile int *HEX3  = (int *)PIO_4_BASE;
-volatile int *HEX4  = (int *)PIO_5_BASE;
-volatile int *HEX5  = (int *)PIO_6_BASE;
-volatile int *SW    = (int *)PIO_7_BASE;
-volatile int *KEYS  = (int *)PIO_8_BASE;
-volatile int *TIMER = (int *)TIMER_0_BASE;
-volatile int *SPI   = (int *)SPI_0_BASE;
+volatile int *LEDS         = (int *)PIO_0_BASE;
+volatile int *HEX0         = (int *)PIO_1_BASE;
+volatile int *HEX1         = (int *)PIO_2_BASE;
+volatile int *HEX2         = (int *)PIO_3_BASE;
+volatile int *HEX3         = (int *)PIO_4_BASE;
+volatile int *HEX4         = (int *)PIO_5_BASE;
+volatile int *HEX5         = (int *)PIO_6_BASE;
+volatile int *SW           = (int *)PIO_7_BASE;
+volatile int *KEYS         = (int *)PIO_8_BASE;
+volatile int *TIMER        = (int *)TIMER_0_BASE;
+volatile int *UART_control = (int *)(UART_0_BASE + 0x0C); /* altera_avalon_uart control reg (IRRDY=bit7) */
 
 
 int main()
 {
-    /* Initialise accelerometer SPI config and tap interrupt registers */
-    accelerometer_init();
+    /* Blank all HEX displays at startup (active-low: 0xFF = all segments off).
+     * If displays go blank after reset, code IS reaching main(). */
+    hex_write_all(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
 
-    /* Enable timer, key, switch, and gsensor IRQs on the NIOS2 */
+    /* Enable all peripheral IRQs (UART irrdy, keys, switches) */
     irq_init();
+
+    /* Initialise accelerometer SPI config and tap interrupt registers */
+//    accelerometer_init();
+
+    
 
     int prev_mode = -1;
 
@@ -60,14 +46,8 @@ int main()
         int mode = get_mode();
         const char *mode_message = NULL;
 
-        /* --- If not in accelerometer mode, silently discard any queued gsensor
-         * events and clear the chip-side IRQ so the ISR stops re-firing.
-         * This prevents the UART flood from blocking mode transitions. --- */
-        if (mode != 2 && gsensor_flag)
-        {
-            gsensor_flag = 0;
-            accelerometer_clear_interrupt();
-        }
+        /* --- Debounce: promote key_pending to key_flag on release --- */
+        key_process_debounce();
 
         /* --- Handle key press (IRQ-driven, bit 0 = KEY0, bit 1 = KEY1) --- */
         if (key_flag)
@@ -76,10 +56,10 @@ int main()
             key_flag = 0;
 
             if (keys & 0x1)
-                printf("KEY0 pressed\n");
+            	uart_puts("KEY0 pressed\n");
 
             if (keys & 0x2)
-                printf("KEY1 pressed\n");
+            	uart_puts("KEY1 pressed\n");
         }
 
         /* --- Handle slide switch change (IRQ-driven) --- */
@@ -101,20 +81,7 @@ int main()
                 break;
             case 2:
                 mode_message = "Accelerometer mode";
-                if (gsensor_flag)
-                {
-                    gsensor_flag = 0;
-                    uint8_t src = accelerometer_clear_interrupt();
 
-                    int16_t x, y, z;
-                    accelerometer_read_xyz(&x, &y, &z);
-                    printf("X: %d  Y: %d  Z: %d\n", x, y, z);
-
-                    if (src & ADXL345_INT_DOUBLE_TAP)
-                        printf("Double tap detected\n");
-                    else if (src & ADXL345_INT_SINGLE_TAP)
-                        printf("Single tap detected\n");
-                }
                 break;
             case 3:
                 mode_message = "Mode 3";
@@ -126,13 +93,18 @@ int main()
                 mode_message = "CPU performance testing mode";
                 break;
             default:
-                printf("Invalid mode: %d\n", mode);
+                uart_puts("Invalid mode\r\n");
                 continue;
         }
 
+        /* Show current mode on HEX0 (visual SW sanity check) */
+        hex_show_digit(mode);
+
         if (mode != prev_mode)
         {
-            printf("Current mode: %s\n", mode_message);
+            uart_puts("Mode: ");
+            uart_puts(mode_message);
+            uart_puts("\r\n");
             prev_mode = mode;
         }
     }

@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "hex.h"
+#include "sw.h"
 #include "utils.h"
 
 extern volatile int *HEX0;
@@ -67,6 +68,12 @@ int decode_alpha_to_7seg(char c)
     }
 }
 
+void hex_show_digit(int digit)
+{
+    if (digit >= 0 && digit <= 9)
+        *HEX0 = seg_code[digit];
+}
+
 void hex_write_all(int h5, int h4, int h3, int h2, int h1, int h0)
 {
     *HEX5 = h5;
@@ -122,9 +129,17 @@ int hex_test_alpha_scrolling(char *str)
 
     uint8_t d5 = 0xFF, d4 = 0xFF, d3 = 0xFF, d2 = 0xFF, d1 = 0xFF, d0 = 0xFF;
 
-    for (int i = 0; i < len + 6; i++) {
-        char c;
+    int saved_mode = get_mode();
 
+    for (int i = 0; i < len + 6; i++) {
+        /* Exit immediately if the user changed the mode switch */
+        if (get_mode() != saved_mode)
+        {
+            hex_write_all(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF); /* blank all */
+            return 0;
+        }
+
+        char c;
         if (i < len)
             c = str[i];
         else
@@ -132,7 +147,6 @@ int hex_test_alpha_scrolling(char *str)
 
         uint8_t new_char = decode_alpha_to_7seg(c);
 
-        // shift to the left so new characters enter from the right
         d5 = d4;
         d4 = d3;
         d3 = d2;
@@ -142,7 +156,7 @@ int hex_test_alpha_scrolling(char *str)
 
         hex_write_all(d5, d4, d3, d2, d1, d0);
 
-        delay_ms(200);   // 0.2s, easier to see
+        delay_ms(200);   // 0.2s per character
     }
 
     return 0;
