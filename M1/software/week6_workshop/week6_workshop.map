@@ -1,0 +1,509 @@
+Archive member included to satisfy reference by file (symbol)
+
+../week6_workshop_bsp/\libhal_bsp.a(alt_load.o)
+                              ../week6_workshop_bsp//obj/HAL/src/crt0.o (alt_load)
+../week6_workshop_bsp/\libhal_bsp.a(alt_main.o)
+                              ../week6_workshop_bsp//obj/HAL/src/crt0.o (alt_main)
+../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o)
+                              obj/default/exception_handler.o (alt_putstr)
+../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o)
+                              ../week6_workshop_bsp/\libhal_bsp.a(alt_main.o) (alt_irq_init)
+../week6_workshop_bsp/\libhal_bsp.a(altera_avalon_jtag_uart_write.o)
+                              ../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o) (altera_avalon_jtag_uart_write)
+../week6_workshop_bsp/\libhal_bsp.a(alt_dcache_flush_all.o)
+                              ../week6_workshop_bsp/\libhal_bsp.a(alt_load.o) (alt_dcache_flush_all)
+../week6_workshop_bsp/\libhal_bsp.a(alt_icache_flush_all.o)
+                              ../week6_workshop_bsp/\libhal_bsp.a(alt_load.o) (alt_icache_flush_all)
+../week6_workshop_bsp/\libhal_bsp.a(altera_nios2_gen2_irq.o)
+                              ../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o) (altera_nios2_gen2_irq_init)
+c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
+                              ../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o) (strlen)
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+reset            0x0000000000000000 0x0000000000000020
+new_sdram_controller_0 0x0000000000000020 0x0000000003ffffe0
+onchip_memory2_0 0x0000000004004000 0x0000000000004000
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD ../week6_workshop_bsp//obj/HAL/src/crt0.o
+LOAD obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+LOAD obj/default/exception_handler.o
+LOAD obj/default/main.o
+LOAD obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+LOAD c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libstdc++.a
+LOAD c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libm.a
+LOAD c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/mno-hw-mul\libgcc.a
+START GROUP
+LOAD c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a
+LOAD c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/mno-hw-mul\libgcc.a
+LOAD ../week6_workshop_bsp/\libhal_bsp.a
+LOAD c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libm.a
+END GROUP
+LOAD c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/mno-hw-mul\libgcc.a
+                0x0000000000000000                __alt_mem_new_sdram_controller_0 = 0x0
+                0x0000000004004000                __alt_mem_onchip_memory2_0 = 0x4004000
+
+.entry          0x0000000000000000       0x20
+ *(.entry)
+ .entry         0x0000000000000000       0x20 ../week6_workshop_bsp//obj/HAL/src/crt0.o
+                0x0000000000000000                __reset
+                0x000000000000000c                _exit
+
+.exceptions     0x0000000000000020      0x114
+                0x0000000000000020                PROVIDE (__ram_exceptions_start, ABSOLUTE (.))
+                0x0000000000000020                . = ALIGN (0x20)
+ *(.irq)
+ *(.exceptions.entry.label)
+ *(.exceptions.entry.user)
+ *(.exceptions.entry.ecc_fatal)
+ *(.exceptions.entry)
+ *(.exceptions.irqtest.user)
+ *(.exceptions.irqtest)
+ *(.exceptions.irqhandler.user)
+ *(.exceptions.irqhandler)
+ *(.exceptions.irqreturn.user)
+ *(.exceptions.irqreturn)
+ *(.exceptions.notirq.label)
+ *(.exceptions.notirq.user)
+ *(.exceptions.notirq)
+ *(.exceptions.soft.user)
+ *(.exceptions.soft)
+ *(.exceptions.unknown.user)
+ *(.exceptions.unknown)
+ *(.exceptions.exit.label)
+ *(.exceptions.exit.user)
+ *(.exceptions.exit)
+ *(.exceptions)
+ .exceptions    0x0000000000000020      0x114 obj/default/exception_handler.o
+                0x0000000000000020                the_exception
+                0x0000000000000134                PROVIDE (__ram_exceptions_end, ABSOLUTE (.))
+                0x0000000000000020                PROVIDE (__flash_exceptions_start, LOADADDR (.exceptions))
+
+.text           0x0000000000000134      0x3a4
+                [!provide]                        PROVIDE (stext, ABSOLUTE (.))
+ *(.interp)
+ *(.hash)
+ *(.dynsym)
+ *(.dynstr)
+ *(.gnu.version)
+ *(.gnu.version_d)
+ *(.gnu.version_r)
+ *(.rel.init)
+ *(.rela.init)
+ *(.rel.text .rel.text.* .rel.gnu.linkonce.t.*)
+ *(.rela.text .rela.text.* .rela.gnu.linkonce.t.*)
+ *(.rel.fini)
+ *(.rela.fini)
+ *(.rel.rodata .rel.rodata.* .rel.gnu.linkonce.r.*)
+ *(.rela.rodata .rela.rodata.* .rela.gnu.linkonce.r.*)
+ *(.rel.data .rel.data.* .rel.gnu.linkonce.d.*)
+ *(.rela.data .rela.data.* .rela.gnu.linkonce.d.*)
+ *(.rel.tdata .rel.tdata.* .rel.gnu.linkonce.td.*)
+ *(.rela.tdata .rela.tdata.* .rela.gnu.linkonce.td.*)
+ *(.rel.tbss .rel.tbss.* .rel.gnu.linkonce.tb.*)
+ *(.rela.tbss .rela.tbss.* .rela.gnu.linkonce.tb.*)
+ *(.rel.ctors)
+ *(.rela.ctors)
+ *(.rel.dtors)
+ *(.rela.dtors)
+ *(.rel.got)
+ *(.rela.got)
+ *(.rel.sdata .rel.sdata.* .rel.gnu.linkonce.s.*)
+ *(.rela.sdata .rela.sdata.* .rela.gnu.linkonce.s.*)
+ *(.rel.sbss .rel.sbss.* .rel.gnu.linkonce.sb.*)
+ *(.rela.sbss .rela.sbss.* .rela.gnu.linkonce.sb.*)
+ *(.rel.sdata2 .rel.sdata2.* .rel.gnu.linkonce.s2.*)
+ *(.rela.sdata2 .rela.sdata2.* .rela.gnu.linkonce.s2.*)
+ *(.rel.sbss2 .rel.sbss2.* .rel.gnu.linkonce.sb2.*)
+ *(.rela.sbss2 .rela.sbss2.* .rela.gnu.linkonce.sb2.*)
+ *(.rel.bss .rel.bss.* .rel.gnu.linkonce.b.*)
+ *(.rela.bss .rela.bss.* .rela.gnu.linkonce.b.*)
+ *(.rel.plt)
+ *(.rela.plt)
+ *(.rel.dyn)
+ *(.init)
+ *(.plt)
+ *(.text .stub .text.* .gnu.linkonce.t.*)
+ .text          0x0000000000000134       0x3c ../week6_workshop_bsp//obj/HAL/src/crt0.o
+                0x0000000000000134                _start
+ .text          0x0000000000000170        0x0 obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+ .text          0x0000000000000170      0x12c obj/default/exception_handler.o
+                0x0000000000000170                interrupt_handler
+ .text          0x000000000000029c        0x0 obj/default/main.o
+ .text.startup  0x000000000000029c       0x74 obj/default/main.o
+                0x000000000000029c                main
+ .text          0x0000000000000310        0x0 obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+ .text          0x0000000000000310       0xe0 ../week6_workshop_bsp/\libhal_bsp.a(alt_load.o)
+                0x0000000000000310                alt_load
+ .text          0x00000000000003f0       0x2c ../week6_workshop_bsp/\libhal_bsp.a(alt_main.o)
+                0x00000000000003f0                alt_main
+ .text          0x000000000000041c       0x38 ../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o)
+                0x000000000000041c                alt_putstr
+ .text          0x0000000000000454       0x24 ../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o)
+                0x0000000000000454                alt_irq_init
+                0x0000000000000474                alt_sys_init
+ .text          0x0000000000000478       0x34 ../week6_workshop_bsp/\libhal_bsp.a(altera_avalon_jtag_uart_write.o)
+                0x0000000000000478                altera_avalon_jtag_uart_write
+ .text          0x00000000000004ac        0x4 ../week6_workshop_bsp/\libhal_bsp.a(alt_dcache_flush_all.o)
+                0x00000000000004ac                alt_dcache_flush_all
+ .text          0x00000000000004b0        0x4 ../week6_workshop_bsp/\libhal_bsp.a(alt_icache_flush_all.o)
+                0x00000000000004b0                alt_icache_flush_all
+ .text          0x00000000000004b4        0x8 ../week6_workshop_bsp/\libhal_bsp.a(altera_nios2_gen2_irq.o)
+                0x00000000000004b4                altera_nios2_gen2_irq_init
+ .text          0x00000000000004bc        0x0 c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
+ .text.strlen   0x00000000000004bc       0x1c c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
+                0x00000000000004bc                strlen
+ *(.gnu.warning.*)
+ *(.fini)
+                [!provide]                        PROVIDE (__etext, ABSOLUTE (.))
+                [!provide]                        PROVIDE (_etext, ABSOLUTE (.))
+                [!provide]                        PROVIDE (etext, ABSOLUTE (.))
+ *(.eh_frame_hdr)
+                0x00000000000004d8                . = ALIGN (0x4)
+                [!provide]                        PROVIDE (__preinit_array_start, ABSOLUTE (.))
+ *(.preinit_array)
+                [!provide]                        PROVIDE (__preinit_array_end, ABSOLUTE (.))
+                [!provide]                        PROVIDE (__init_array_start, ABSOLUTE (.))
+ *(.init_array)
+                [!provide]                        PROVIDE (__init_array_end, ABSOLUTE (.))
+                [!provide]                        PROVIDE (__fini_array_start, ABSOLUTE (.))
+ *(.fini_array)
+                [!provide]                        PROVIDE (__fini_array_end, ABSOLUTE (.))
+ *(.eh_frame)
+ *(.gcc_except_table .gcc_except_table.*)
+ *(.dynamic)
+                [!provide]                        PROVIDE (__CTOR_LIST__, ABSOLUTE (.))
+ *(.ctors)
+ *(SORT(.ctors.*))
+                [!provide]                        PROVIDE (__CTOR_END__, ABSOLUTE (.))
+                [!provide]                        PROVIDE (__DTOR_LIST__, ABSOLUTE (.))
+ *(.dtors)
+ *(SORT(.dtors.*))
+                [!provide]                        PROVIDE (__DTOR_END__, ABSOLUTE (.))
+ *(.jcr)
+                0x00000000000004d8                . = ALIGN (0x4)
+
+.reset          0x00000000000004d8       0x10
+ .reset         0x00000000000004d8       0x10 obj/default/exception_handler.o
+                0x00000000000004d8                the_reset
+
+.rodata         0x00000000000004e8        0x0
+                0x00000000000004e8                PROVIDE (__ram_rodata_start, ABSOLUTE (.))
+                0x00000000000004e8                . = ALIGN (0x4)
+ *(.rodata .rodata.* .gnu.linkonce.r.*)
+ *(.rodata1)
+                0x00000000000004e8                . = ALIGN (0x4)
+                0x00000000000004e8                PROVIDE (__ram_rodata_end, ABSOLUTE (.))
+                0x00000000000004e8                PROVIDE (__flash_rodata_start, LOADADDR (.rodata))
+
+.rwdata         0x00000000000004e8       0x30 load address 0x0000000000000518
+                0x00000000000004e8                PROVIDE (__ram_rwdata_start, ABSOLUTE (.))
+                0x00000000000004e8                . = ALIGN (0x4)
+ *(.got.plt)
+ *(.got)
+ *(.data1)
+ *(.data .data.* .gnu.linkonce.d.*)
+ .data          0x00000000000004e8        0x0 ../week6_workshop_bsp//obj/HAL/src/crt0.o
+ .data          0x00000000000004e8        0x0 obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+ .data          0x00000000000004e8        0x0 obj/default/exception_handler.o
+ .data          0x00000000000004e8        0x0 obj/default/main.o
+ .data          0x00000000000004e8        0x0 obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+ .data          0x00000000000004e8        0x0 ../week6_workshop_bsp/\libhal_bsp.a(alt_load.o)
+ .data          0x00000000000004e8        0x0 ../week6_workshop_bsp/\libhal_bsp.a(alt_main.o)
+ .data          0x00000000000004e8        0x0 ../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o)
+ .data          0x00000000000004e8        0x0 ../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o)
+ .data          0x00000000000004e8        0x0 ../week6_workshop_bsp/\libhal_bsp.a(altera_avalon_jtag_uart_write.o)
+ .data          0x00000000000004e8        0x0 ../week6_workshop_bsp/\libhal_bsp.a(alt_dcache_flush_all.o)
+ .data          0x00000000000004e8        0x0 ../week6_workshop_bsp/\libhal_bsp.a(alt_icache_flush_all.o)
+ .data          0x00000000000004e8        0x0 ../week6_workshop_bsp/\libhal_bsp.a(altera_nios2_gen2_irq.o)
+ .data          0x00000000000004e8        0x0 c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
+                0x00000000000084e8                _gp = ABSOLUTE ((. + 0x8000))
+                [!provide]                        PROVIDE (gp, _gp)
+ *(.rwdata .rwdata.*)
+ *(.sdata .sdata.* .gnu.linkonce.s.*)
+ .sdata         0x00000000000004e8       0x28 obj/default/main.o
+                0x00000000000004e8                UART_control
+                0x00000000000004ec                UART
+                0x00000000000004f0                OutPort_HEX0
+                0x00000000000004f4                GPIO2_Port
+                0x00000000000004f8                Counter_IRQMask
+                0x00000000000004fc                Counter_EdgeCap
+                0x0000000000000500                InPort_COUNTER
+                0x0000000000000504                InPort_KEY1
+                0x0000000000000508                OutPort_LED8
+                0x000000000000050c                OutPort_LEDR
+ .sdata         0x0000000000000510        0x8 ../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o)
+                0x0000000000000510                uart_0
+                0x0000000000000514                jtag_uart_0
+ *(.sdata2 .sdata2.* .gnu.linkonce.s2.*)
+                0x0000000000000518                . = ALIGN (0x4)
+                0x0000000000000518                _edata = ABSOLUTE (.)
+                [!provide]                        PROVIDE (edata, ABSOLUTE (.))
+                0x0000000000000518                PROVIDE (__ram_rwdata_end, ABSOLUTE (.))
+                0x0000000000000518                PROVIDE (__flash_rwdata_start, LOADADDR (.rwdata))
+
+.bss            0x0000000000000548       0x10
+                0x0000000000000548                __bss_start = ABSOLUTE (.)
+                [!provide]                        PROVIDE (__sbss_start, ABSOLUTE (.))
+                [!provide]                        PROVIDE (___sbss_start, ABSOLUTE (.))
+ *(.dynsbss)
+ *(.sbss .sbss.* .gnu.linkonce.sb.*)
+ .sbss          0x0000000000000548        0x4 obj/default/exception_handler.o
+ .sbss          0x000000000000054c        0xc ../week6_workshop_bsp/\libhal_bsp.a(alt_main.o)
+                0x000000000000054c                alt_envp
+                0x0000000000000550                alt_argv
+                0x0000000000000554                alt_argc
+ *(.sbss2 .sbss2.* .gnu.linkonce.sb2.*)
+ *(.scommon)
+                [!provide]                        PROVIDE (__sbss_end, ABSOLUTE (.))
+                [!provide]                        PROVIDE (___sbss_end, ABSOLUTE (.))
+ *(.dynbss)
+ *(.bss .bss.* .gnu.linkonce.b.*)
+ .bss           0x0000000000000558        0x0 ../week6_workshop_bsp//obj/HAL/src/crt0.o
+ .bss           0x0000000000000558        0x0 obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+ .bss           0x0000000000000558        0x0 obj/default/exception_handler.o
+ .bss           0x0000000000000558        0x0 obj/default/main.o
+ .bss           0x0000000000000558        0x0 obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+ .bss           0x0000000000000558        0x0 ../week6_workshop_bsp/\libhal_bsp.a(alt_load.o)
+ .bss           0x0000000000000558        0x0 ../week6_workshop_bsp/\libhal_bsp.a(alt_main.o)
+ .bss           0x0000000000000558        0x0 ../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o)
+ .bss           0x0000000000000558        0x0 ../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o)
+ .bss           0x0000000000000558        0x0 ../week6_workshop_bsp/\libhal_bsp.a(altera_avalon_jtag_uart_write.o)
+ .bss           0x0000000000000558        0x0 ../week6_workshop_bsp/\libhal_bsp.a(alt_dcache_flush_all.o)
+ .bss           0x0000000000000558        0x0 ../week6_workshop_bsp/\libhal_bsp.a(alt_icache_flush_all.o)
+ .bss           0x0000000000000558        0x0 ../week6_workshop_bsp/\libhal_bsp.a(altera_nios2_gen2_irq.o)
+ .bss           0x0000000000000558        0x0 c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
+ *(COMMON)
+                0x0000000000000558                . = ALIGN (0x4)
+                0x0000000000000558                __bss_end = ABSOLUTE (.)
+
+.new_sdram_controller_0
+                0x0000000000000558        0x0
+                [!provide]                        PROVIDE (_alt_partition_new_sdram_controller_0_start, ABSOLUTE (.))
+ *(.new_sdram_controller_0 .new_sdram_controller_0. new_sdram_controller_0.*)
+                0x0000000000000558                . = ALIGN (0x4)
+                [!provide]                        PROVIDE (_alt_partition_new_sdram_controller_0_end, ABSOLUTE (.))
+                0x0000000000000558                _end = ABSOLUTE (.)
+                0x0000000000000558                end = ABSOLUTE (.)
+                0x0000000000000558                __alt_stack_base = ABSOLUTE (.)
+                [!provide]                        PROVIDE (_alt_partition_new_sdram_controller_0_load_addr, LOADADDR (.new_sdram_controller_0))
+
+.onchip_memory2_0
+                0x0000000004004000        0x0 load address 0x0000000000000558
+                [!provide]                        PROVIDE (_alt_partition_onchip_memory2_0_start, ABSOLUTE (.))
+ *(.onchip_memory2_0 .onchip_memory2_0. onchip_memory2_0.*)
+                0x0000000004004000                . = ALIGN (0x4)
+                [!provide]                        PROVIDE (_alt_partition_onchip_memory2_0_end, ABSOLUTE (.))
+                [!provide]                        PROVIDE (_alt_partition_onchip_memory2_0_load_addr, LOADADDR (.onchip_memory2_0))
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment        0x0000000000000000       0x23
+ *(.comment)
+ .comment       0x0000000000000000       0x23 obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+                                         0x24 (size before relaxing)
+ .comment       0x0000000000000023       0x24 obj/default/exception_handler.o
+ .comment       0x0000000000000023       0x24 obj/default/main.o
+ .comment       0x0000000000000023       0x24 obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+ .comment       0x0000000000000023       0x24 ../week6_workshop_bsp/\libhal_bsp.a(alt_load.o)
+ .comment       0x0000000000000023       0x24 ../week6_workshop_bsp/\libhal_bsp.a(alt_main.o)
+ .comment       0x0000000000000023       0x24 ../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o)
+ .comment       0x0000000000000023       0x24 ../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o)
+ .comment       0x0000000000000023       0x24 ../week6_workshop_bsp/\libhal_bsp.a(altera_avalon_jtag_uart_write.o)
+ .comment       0x0000000000000023       0x24 ../week6_workshop_bsp/\libhal_bsp.a(alt_dcache_flush_all.o)
+ .comment       0x0000000000000023       0x24 ../week6_workshop_bsp/\libhal_bsp.a(alt_icache_flush_all.o)
+ .comment       0x0000000000000023       0x24 ../week6_workshop_bsp/\libhal_bsp.a(altera_nios2_gen2_irq.o)
+ .comment       0x0000000000000023       0x24 c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x0000000000000000      0x198
+ *(.debug_aranges)
+ .debug_aranges
+                0x0000000000000000       0x28 ../week6_workshop_bsp//obj/HAL/src/crt0.o
+ .debug_aranges
+                0x0000000000000028       0x30 obj/default/exception_handler.o
+ .debug_aranges
+                0x0000000000000058       0x20 obj/default/main.o
+ .debug_aranges
+                0x0000000000000078       0x20 ../week6_workshop_bsp/\libhal_bsp.a(alt_load.o)
+ .debug_aranges
+                0x0000000000000098       0x20 ../week6_workshop_bsp/\libhal_bsp.a(alt_main.o)
+ .debug_aranges
+                0x00000000000000b8       0x20 ../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o)
+ .debug_aranges
+                0x00000000000000d8       0x20 ../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o)
+ .debug_aranges
+                0x00000000000000f8       0x20 ../week6_workshop_bsp/\libhal_bsp.a(altera_avalon_jtag_uart_write.o)
+ .debug_aranges
+                0x0000000000000118       0x20 ../week6_workshop_bsp/\libhal_bsp.a(alt_dcache_flush_all.o)
+ .debug_aranges
+                0x0000000000000138       0x20 ../week6_workshop_bsp/\libhal_bsp.a(alt_icache_flush_all.o)
+ .debug_aranges
+                0x0000000000000158       0x20 ../week6_workshop_bsp/\libhal_bsp.a(altera_nios2_gen2_irq.o)
+ .debug_aranges
+                0x0000000000000178       0x20 c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info     0x0000000000000000      0xd74
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x0000000000000000       0x98 ../week6_workshop_bsp//obj/HAL/src/crt0.o
+ .debug_info    0x0000000000000098      0x13c obj/default/exception_handler.o
+ .debug_info    0x00000000000001d4      0x164 obj/default/main.o
+ .debug_info    0x0000000000000338      0x1c9 ../week6_workshop_bsp/\libhal_bsp.a(alt_load.o)
+ .debug_info    0x0000000000000501      0x169 ../week6_workshop_bsp/\libhal_bsp.a(alt_main.o)
+ .debug_info    0x000000000000066a      0x13a ../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o)
+ .debug_info    0x00000000000007a4      0x1ba ../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o)
+ .debug_info    0x000000000000095e      0x197 ../week6_workshop_bsp/\libhal_bsp.a(altera_avalon_jtag_uart_write.o)
+ .debug_info    0x0000000000000af5       0x92 ../week6_workshop_bsp/\libhal_bsp.a(alt_dcache_flush_all.o)
+ .debug_info    0x0000000000000b87       0x92 ../week6_workshop_bsp/\libhal_bsp.a(alt_icache_flush_all.o)
+ .debug_info    0x0000000000000c19       0x92 ../week6_workshop_bsp/\libhal_bsp.a(altera_nios2_gen2_irq.o)
+ .debug_info    0x0000000000000cab       0xc9 c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
+
+.debug_abbrev   0x0000000000000000      0x760
+ *(.debug_abbrev)
+ .debug_abbrev  0x0000000000000000       0x12 ../week6_workshop_bsp//obj/HAL/src/crt0.o
+ .debug_abbrev  0x0000000000000012      0x103 obj/default/exception_handler.o
+ .debug_abbrev  0x0000000000000115       0x91 obj/default/main.o
+ .debug_abbrev  0x00000000000001a6       0xd8 ../week6_workshop_bsp/\libhal_bsp.a(alt_load.o)
+ .debug_abbrev  0x000000000000027e       0xee ../week6_workshop_bsp/\libhal_bsp.a(alt_main.o)
+ .debug_abbrev  0x000000000000036c       0xd3 ../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o)
+ .debug_abbrev  0x000000000000043f      0x107 ../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o)
+ .debug_abbrev  0x0000000000000546       0xd5 ../week6_workshop_bsp/\libhal_bsp.a(altera_avalon_jtag_uart_write.o)
+ .debug_abbrev  0x000000000000061b       0x42 ../week6_workshop_bsp/\libhal_bsp.a(alt_dcache_flush_all.o)
+ .debug_abbrev  0x000000000000065d       0x42 ../week6_workshop_bsp/\libhal_bsp.a(alt_icache_flush_all.o)
+ .debug_abbrev  0x000000000000069f       0x42 ../week6_workshop_bsp/\libhal_bsp.a(altera_nios2_gen2_irq.o)
+ .debug_abbrev  0x00000000000006e1       0x7f c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
+
+.debug_line     0x0000000000000000      0x826
+ *(.debug_line)
+ .debug_line    0x0000000000000000       0x66 ../week6_workshop_bsp//obj/HAL/src/crt0.o
+ .debug_line    0x0000000000000066        0x0 obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+ .debug_line    0x0000000000000066      0x10a obj/default/exception_handler.o
+ .debug_line    0x0000000000000170       0x64 obj/default/main.o
+ .debug_line    0x00000000000001d4        0x0 obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+ .debug_line    0x00000000000001d4       0xa4 ../week6_workshop_bsp/\libhal_bsp.a(alt_load.o)
+ .debug_line    0x0000000000000278       0xbd ../week6_workshop_bsp/\libhal_bsp.a(alt_main.o)
+ .debug_line    0x0000000000000335       0xa0 ../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o)
+ .debug_line    0x00000000000003d5      0x119 ../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o)
+ .debug_line    0x00000000000004ee       0xf0 ../week6_workshop_bsp/\libhal_bsp.a(altera_avalon_jtag_uart_write.o)
+ .debug_line    0x00000000000005de       0x4e ../week6_workshop_bsp/\libhal_bsp.a(alt_dcache_flush_all.o)
+ .debug_line    0x000000000000062c       0x4e ../week6_workshop_bsp/\libhal_bsp.a(alt_icache_flush_all.o)
+ .debug_line    0x000000000000067a       0x50 ../week6_workshop_bsp/\libhal_bsp.a(altera_nios2_gen2_irq.o)
+ .debug_line    0x00000000000006ca      0x15c c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
+
+.debug_frame    0x0000000000000000      0x1dc
+ *(.debug_frame)
+ .debug_frame   0x0000000000000000       0x54 obj/default/exception_handler.o
+ .debug_frame   0x0000000000000054       0x20 obj/default/main.o
+ .debug_frame   0x0000000000000074       0x30 ../week6_workshop_bsp/\libhal_bsp.a(alt_load.o)
+ .debug_frame   0x00000000000000a4       0x2c ../week6_workshop_bsp/\libhal_bsp.a(alt_main.o)
+ .debug_frame   0x00000000000000d0       0x30 ../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o)
+ .debug_frame   0x0000000000000100       0x3c ../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o)
+ .debug_frame   0x000000000000013c       0x20 ../week6_workshop_bsp/\libhal_bsp.a(altera_avalon_jtag_uart_write.o)
+ .debug_frame   0x000000000000015c       0x20 ../week6_workshop_bsp/\libhal_bsp.a(alt_dcache_flush_all.o)
+ .debug_frame   0x000000000000017c       0x20 ../week6_workshop_bsp/\libhal_bsp.a(alt_icache_flush_all.o)
+ .debug_frame   0x000000000000019c       0x20 ../week6_workshop_bsp/\libhal_bsp.a(altera_nios2_gen2_irq.o)
+ .debug_frame   0x00000000000001bc       0x20 c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
+
+.debug_str      0x0000000000000000      0x7cd
+ *(.debug_str)
+ .debug_str     0x0000000000000000       0xe0 obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+ .debug_str     0x00000000000000e0       0xfd obj/default/exception_handler.o
+                                        0x162 (size before relaxing)
+ .debug_str     0x00000000000001dd       0x8f obj/default/main.o
+                                        0x17e (size before relaxing)
+ .debug_str     0x000000000000026c       0xe0 obj/default/.metadata/.plugins/org.eclipse.cdt.make.core/specs.o
+ .debug_str     0x000000000000026c      0x1db ../week6_workshop_bsp/\libhal_bsp.a(alt_load.o)
+                                        0x266 (size before relaxing)
+ .debug_str     0x0000000000000447       0x8f ../week6_workshop_bsp/\libhal_bsp.a(alt_main.o)
+                                        0x1df (size before relaxing)
+ .debug_str     0x00000000000004d6       0x66 ../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o)
+                                        0x1bc (size before relaxing)
+ .debug_str     0x000000000000053c       0xba ../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o)
+                                        0x28b (size before relaxing)
+ .debug_str     0x00000000000005f6       0x3f ../week6_workshop_bsp/\libhal_bsp.a(altera_avalon_jtag_uart_write.o)
+                                        0x23f (size before relaxing)
+ .debug_str     0x0000000000000635       0x1f ../week6_workshop_bsp/\libhal_bsp.a(alt_dcache_flush_all.o)
+                                        0x17f (size before relaxing)
+ .debug_str     0x0000000000000654       0x1f ../week6_workshop_bsp/\libhal_bsp.a(alt_icache_flush_all.o)
+                                        0x17f (size before relaxing)
+ .debug_str     0x0000000000000673       0x20 ../week6_workshop_bsp/\libhal_bsp.a(altera_nios2_gen2_irq.o)
+                                        0x186 (size before relaxing)
+ .debug_str     0x0000000000000693      0x13a c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
+                                        0x1e5 (size before relaxing)
+
+.debug_loc      0x0000000000000000      0x20d
+ *(.debug_loc)
+ .debug_loc     0x0000000000000000       0x50 obj/default/exception_handler.o
+ .debug_loc     0x0000000000000050       0xbc obj/default/main.o
+ .debug_loc     0x000000000000010c       0x37 ../week6_workshop_bsp/\libhal_bsp.a(alt_putstr.o)
+ .debug_loc     0x0000000000000143       0x21 ../week6_workshop_bsp/\libhal_bsp.a(alt_sys_init.o)
+ .debug_loc     0x0000000000000164       0x8b ../week6_workshop_bsp/\libhal_bsp.a(altera_avalon_jtag_uart_write.o)
+ .debug_loc     0x00000000000001ef       0x1e c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+
+.debug_alt_sim_info
+                0x0000000000000000       0x10
+ *(.debug_alt_sim_info)
+ .debug_alt_sim_info
+                0x0000000000000000       0x10 ../week6_workshop_bsp//obj/HAL/src/crt0.o
+                0x0000000004000000                __alt_data_end = 0x4000000
+                0x0000000004000000                PROVIDE (__alt_stack_pointer, __alt_data_end)
+                [!provide]                        PROVIDE (__alt_stack_limit, __alt_stack_base)
+                [!provide]                        PROVIDE (__alt_heap_start, end)
+                [!provide]                        PROVIDE (__alt_heap_limit, 0x4000000)
+OUTPUT(week6_workshop.elf elf32-littlenios2)
+
+.debug_ranges   0x0000000000000000       0xe8
+ .debug_ranges  0x0000000000000000       0x20 ../week6_workshop_bsp//obj/HAL/src/crt0.o
+ .debug_ranges  0x0000000000000020       0x40 obj/default/exception_handler.o
+ .debug_ranges  0x0000000000000060       0x30 obj/default/main.o
+ .debug_ranges  0x0000000000000090       0x48 ../week6_workshop_bsp/\libhal_bsp.a(alt_load.o)
+ .debug_ranges  0x00000000000000d8       0x10 c:/intelfpga_lite/18.1/nios2eds/bin/gnu/h-x86_64-mingw32/bin/../lib/gcc/nios2-elf/5.3.0/../../../../../H-x86_64-mingw32/nios2-elf/lib/mno-hw-mul\libsmallc.a(lib_a-strlen.o)
