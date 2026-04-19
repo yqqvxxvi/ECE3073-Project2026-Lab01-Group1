@@ -8,6 +8,7 @@
 #include "system.h"
 #include "hex.h"
 #include "accelerometer.h"
+#include "sdram_test.h"
 
 #include <stdio.h>
 //#include <includes.h>
@@ -272,6 +273,7 @@ int main(void)
 	*speaker   = 0x00;   // OFF initially
 
 	int prev_mode = -1;
+	int sdram_test_done = 0;
 
     while (1)
     {
@@ -280,6 +282,7 @@ int main(void)
 		int sw_raw = (*InPort_SW) & 0xF;
 		int sw1 = sw_raw & 0x1;
 		int sw2 = sw_raw & 0x2;
+		int sw3 = sw_raw & 0x4;
 		int mode = 0;
 
 		if (sw1 == 1)
@@ -289,6 +292,10 @@ int main(void)
 		else if (sw2 == 2)
         {
 			mode = 2;
+		}
+		else if (sw3 == 4)
+        {
+			mode = 3;
 		}
 
 		if (mode != prev_mode)
@@ -300,6 +307,10 @@ int main(void)
 			else if (mode == 2)
 			{
 				alt_putstr("SLIDE SWITCH 2 ON\n");
+			}
+			else if (mode == 3)
+			{
+				alt_putstr("SLIDE SWITCH 3 ON (SDRAM TEST)\n");
 			}
 			else
 			{
@@ -381,6 +392,14 @@ int main(void)
 					}
 				}
         	}
+	        else if (mode == 3)
+	        {
+				if (!sdram_test_done)
+				{
+					sdram_run_default_test();
+					sdram_test_done = 1;
+				}
+			}
         else {
             for (int i = 0; i < 6; i++) hex_buf[i] = 0xFF;
             hex_refresh();
@@ -389,6 +408,11 @@ int main(void)
 			*green_LED = 0x00;
 			*yellow_LED = 0x00;
             }
+
+			if (mode != 3)
+			{
+				sdram_test_done = 0;
+			}
 
 		prev_key0 = curr_key0;
 		prev_key1 = curr_key1;
