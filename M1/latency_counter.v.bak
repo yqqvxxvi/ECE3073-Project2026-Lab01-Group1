@@ -1,0 +1,28 @@
+module latency_counter (
+    input  wire        clk,            // CLOCK_50
+    input  wire        leader_signal,   // Start trigger
+    input  wire        follower_signal, // Stop trigger
+    output reg [11:0]  latency_count    // 12-bit output
+);
+
+    reg counting; // Internal state to track if we are currently counting
+
+    always @(posedge clk) begin
+        if (leader_signal) begin
+            // Start counting: reset count to 0 and set state to active
+            latency_count <= 12'd0;
+            counting <= 1'b1;
+        end 
+        else if (follower_signal) begin
+            // Stop counting: keep the current value and set state to inactive
+            counting <= 1'b0;
+        end 
+        else if (counting) begin
+            // Increment only if we haven't reached the max 12-bit value (4095)
+            if (latency_count < 12'hFFF) begin
+                latency_count <= latency_count + 1'b1;
+            end
+        end
+    end
+
+endmodule
