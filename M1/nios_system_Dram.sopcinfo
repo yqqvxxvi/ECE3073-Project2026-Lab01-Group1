@@ -5,11 +5,11 @@
  version="1.0"
  fabric="QSYS">
  <!-- Format version 18.1 625 (Future versions may contain additional information.) -->
- <!-- 2026.04.19.16:48:26 -->
+ <!-- 2026.04.19.23:44:32 -->
  <!-- A collection of modules and connections -->
  <parameter name="AUTO_GENERATION_ID">
   <type>java.lang.Integer</type>
-  <value>1776588505</value>
+  <value>1776613471</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -9290,14 +9290,14 @@ parameters are a RESULT of the module parameters. -->
     <moduleName>accelerometer_spi_0</moduleName>
     <slaveName>interrupt</slaveName>
     <name>accelerometer_spi_0.interrupt</name>
-    <interruptNumber>2</interruptNumber>
+    <interruptNumber>1</interruptNumber>
    </interrupt>
    <interrupt>
     <isBridge>false</isBridge>
     <moduleName>jtag_uart_0</moduleName>
     <slaveName>irq</slaveName>
     <name>jtag_uart_0.irq</name>
-    <interruptNumber>1</interruptNumber>
+    <interruptNumber>0</interruptNumber>
    </interrupt>
    <interrupt>
     <isBridge>false</isBridge>
@@ -9311,21 +9311,21 @@ parameters are a RESULT of the module parameters. -->
     <moduleName>uart_0</moduleName>
     <slaveName>irq</slaveName>
     <name>uart_0.irq</name>
-    <interruptNumber>4</interruptNumber>
+    <interruptNumber>3</interruptNumber>
    </interrupt>
    <interrupt>
     <isBridge>false</isBridge>
     <moduleName>spi_0</moduleName>
     <slaveName>irq</slaveName>
     <name>spi_0.irq</name>
-    <interruptNumber>3</interruptNumber>
+    <interruptNumber>2</interruptNumber>
    </interrupt>
    <interrupt>
     <isBridge>false</isBridge>
     <moduleName>timer_0</moduleName>
     <slaveName>irq</slaveName>
     <name>timer_0.irq</name>
-    <interruptNumber>0</interruptNumber>
+    <interruptNumber>4</interruptNumber>
    </interrupt>
   </interface>
   <interface name="debug_reset_request" kind="reset_source" version="18.1">
@@ -26174,7 +26174,7 @@ parameters are a RESULT of the module parameters. -->
    end="accelerometer_spi_0.interrupt">
   <parameter name="irqNumber">
    <type>int</type>
-   <value>2</value>
+   <value>1</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -26209,7 +26209,7 @@ parameters are a RESULT of the module parameters. -->
    end="jtag_uart_0.irq">
   <parameter name="irqNumber">
    <type>int</type>
-   <value>1</value>
+   <value>0</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -26279,7 +26279,7 @@ parameters are a RESULT of the module parameters. -->
    end="uart_0.irq">
   <parameter name="irqNumber">
    <type>int</type>
-   <value>4</value>
+   <value>3</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -26314,7 +26314,7 @@ parameters are a RESULT of the module parameters. -->
    end="spi_0.irq">
   <parameter name="irqNumber">
    <type>int</type>
-   <value>3</value>
+   <value>2</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
@@ -26349,7 +26349,7 @@ parameters are a RESULT of the module parameters. -->
    end="timer_0.irq">
   <parameter name="irqNumber">
    <type>int</type>
-   <value>0</value>
+   <value>4</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>true</visible>
