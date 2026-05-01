@@ -1,0 +1,45 @@
+	nios_system_Dram u0 (
+		.accel_I2C_SDAT      (<connected-to-accel_I2C_SDAT>),      //        accel.I2C_SDAT
+		.accel_I2C_SCLK      (<connected-to-accel_I2C_SCLK>),      //             .I2C_SCLK
+		.accel_G_SENSOR_CS_N (<connected-to-accel_G_SENSOR_CS_N>), //             .G_SENSOR_CS_N
+		.accel_G_SENSOR_INT  (<connected-to-accel_G_SENSOR_INT>),  //             .G_SENSOR_INT
+		.buzzer_export       (<connected-to-buzzer_export>),       //       buzzer.export
+		.clk50_clk           (<connected-to-clk50_clk>),           //        clk50.clk
+		.dram_addr           (<connected-to-dram_addr>),           //         dram.addr
+		.dram_ba             (<connected-to-dram_ba>),             //             .ba
+		.dram_cas_n          (<connected-to-dram_cas_n>),          //             .cas_n
+		.dram_cke            (<connected-to-dram_cke>),            //             .cke
+		.dram_cs_n           (<connected-to-dram_cs_n>),           //             .cs_n
+		.dram_dq             (<connected-to-dram_dq>),             //             .dq
+		.dram_dqm            (<connected-to-dram_dqm>),            //             .dqm
+		.dram_ras_n          (<connected-to-dram_ras_n>),          //             .ras_n
+		.dram_we_n           (<connected-to-dram_we_n>),           //             .we_n
+		.green_light_export  (<connected-to-green_light_export>),  //  green_light.export
+		.hex012_export       (<connected-to-hex012_export>),       //       hex012.export
+		.hex345_export       (<connected-to-hex345_export>),       //       hex345.export
+		.key0_export         (<connected-to-key0_export>),         //         key0.export
+		.key1_export         (<connected-to-key1_export>),         //         key1.export
+		.latency_out_export  (<connected-to-latency_out_export>),  //  latency_out.export
+		.led8_export         (<connected-to-led8_export>),         //         led8.export
+		.msb_export          (<connected-to-msb_export>),          //          msb.export
+		.red_led_0_7_export  (<connected-to-red_led_0_7_export>),  //  red_led_0_7.export
+		.red_light_export    (<connected-to-red_light_export>),    //    red_light.export
+		.spi_MISO            (<connected-to-spi_MISO>),            //          spi.MISO
+		.spi_MOSI            (<connected-to-spi_MOSI>),            //             .MOSI
+		.spi_SCLK            (<connected-to-spi_SCLK>),            //             .SCLK
+		.spi_SS_n            (<connected-to-spi_SS_n>),            //             .SS_n
+		.spi_ss_export       (<connected-to-spi_ss_export>),       //       spi_ss.export
+		.sw0_8_export        (<connected-to-sw0_8_export>),        //        sw0_8.export
+		.uart_0_rxd          (<connected-to-uart_0_rxd>),          //       uart_0.rxd
+		.uart_0_txd          (<connected-to-uart_0_txd>),          //             .txd
+		.vga_CLK             (<connected-to-vga_CLK>),             //          vga.CLK
+		.vga_HS              (<connected-to-vga_HS>),              //             .HS
+		.vga_VS              (<connected-to-vga_VS>),              //             .VS
+		.vga_BLANK           (<connected-to-vga_BLANK>),           //             .BLANK
+		.vga_SYNC            (<connected-to-vga_SYNC>),            //             .SYNC
+		.vga_R               (<connected-to-vga_R>),               //             .R
+		.vga_G               (<connected-to-vga_G>),               //             .G
+		.vga_B               (<connected-to-vga_B>),               //             .B
+		.yellow_light_export (<connected-to-yellow_light_export>)  // yellow_light.export
+	);
+
