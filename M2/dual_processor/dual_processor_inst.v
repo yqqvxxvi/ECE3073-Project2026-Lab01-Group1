@@ -1,0 +1,41 @@
+	dual_processor u0 (
+		.accel_I2C_SDAT                          (<connected-to-accel_I2C_SDAT>),                          //                            accel.I2C_SDAT
+		.accel_I2C_SCLK                          (<connected-to-accel_I2C_SCLK>),                          //                                 .I2C_SCLK
+		.accel_G_SENSOR_CS_N                     (<connected-to-accel_G_SENSOR_CS_N>),                     //                                 .G_SENSOR_CS_N
+		.accel_G_SENSOR_INT                      (<connected-to-accel_G_SENSOR_INT>),                      //                                 .G_SENSOR_INT
+		.buzzer_external_connection_export       (<connected-to-buzzer_external_connection_export>),       //       buzzer_external_connection.export
+		.green_light_external_connection_export  (<connected-to-green_light_external_connection_export>),  //  green_light_external_connection.export
+		.hex012_external_connection_export       (<connected-to-hex012_external_connection_export>),       //       hex012_external_connection.export
+		.hex345_external_connection_export       (<connected-to-hex345_external_connection_export>),       //       hex345_external_connection.export
+		.key01_export                            (<connected-to-key01_export>),                            //                            key01.export
+		.red_light_external_connection_export    (<connected-to-red_light_external_connection_export>),    //    red_light_external_connection.export
+		.sdram_addr                              (<connected-to-sdram_addr>),                              //                            sdram.addr
+		.sdram_ba                                (<connected-to-sdram_ba>),                                //                                 .ba
+		.sdram_cas_n                             (<connected-to-sdram_cas_n>),                             //                                 .cas_n
+		.sdram_cke                               (<connected-to-sdram_cke>),                               //                                 .cke
+		.sdram_cs_n                              (<connected-to-sdram_cs_n>),                              //                                 .cs_n
+		.sdram_dq                                (<connected-to-sdram_dq>),                                //                                 .dq
+		.sdram_dqm                               (<connected-to-sdram_dqm>),                               //                                 .dqm
+		.sdram_ras_n                             (<connected-to-sdram_ras_n>),                             //                                 .ras_n
+		.sdram_we_n                              (<connected-to-sdram_we_n>),                              //                                 .we_n
+		.sdram_clk_clk                           (<connected-to-sdram_clk_clk>),                           //                        sdram_clk.clk
+		.spi_MISO                                (<connected-to-spi_MISO>),                                //                              spi.MISO
+		.spi_MOSI                                (<connected-to-spi_MOSI>),                                //                                 .MOSI
+		.spi_SCLK                                (<connected-to-spi_SCLK>),                                //                                 .SCLK
+		.spi_SS_n                                (<connected-to-spi_SS_n>),                                //                                 .SS_n
+		.spi_ss_external_connection_export       (<connected-to-spi_ss_external_connection_export>),       //       spi_ss_external_connection.export
+		.switch_export                           (<connected-to-switch_export>),                           //                           switch.export
+		.sys_sdram_ref_clk_clk                   (<connected-to-sys_sdram_ref_clk_clk>),                   //                sys_sdram_ref_clk.clk
+		.sys_sdram_ref_reset_reset               (<connected-to-sys_sdram_ref_reset_reset>),               //              sys_sdram_ref_reset.reset
+		.us_counter_export                       (<connected-to-us_counter_export>),                       //                       us_counter.export
+		.vga_CLK                                 (<connected-to-vga_CLK>),                                 //                              vga.CLK
+		.vga_HS                                  (<connected-to-vga_HS>),                                  //                                 .HS
+		.vga_VS                                  (<connected-to-vga_VS>),                                  //                                 .VS
+		.vga_BLANK                               (<connected-to-vga_BLANK>),                               //                                 .BLANK
+		.vga_SYNC                                (<connected-to-vga_SYNC>),                                //                                 .SYNC
+		.vga_R                                   (<connected-to-vga_R>),                                   //                                 .R
+		.vga_G                                   (<connected-to-vga_G>),                                   //                                 .G
+		.vga_B                                   (<connected-to-vga_B>),                                   //                                 .B
+		.yellow_light_external_connection_export (<connected-to-yellow_light_external_connection_export>)  // yellow_light_external_connection.export
+	);
+
