@@ -345,7 +345,7 @@ refer to the applicable agreement for further details.
 		(text "B" (rect 229 963 464 1936)(font "Arial" (color 0 0 0)))
 		(text "yellow_light_external_connection" (rect 34 979 260 1971)(font "Arial" (color 128 0 0)(font_size 9)))
 		(text "export" (rect 229 1003 494 2016)(font "Arial" (color 0 0 0)))
-		(text " system " (rect 541 1024 1130 2058)(font "Arial" ))
+		(text " dual_processor " (rect 507 1024 1110 2058)(font "Arial" ))
 		(line (pt 224 32)(pt 352 32)(line_width 1))
 		(line (pt 352 32)(pt 352 1024)(line_width 1))
 		(line (pt 224 1024)(pt 352 1024)(line_width 1))

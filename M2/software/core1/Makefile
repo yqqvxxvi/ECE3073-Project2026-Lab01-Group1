@@ -142,7 +142,8 @@ ACDS_VERSION := 18.1
 ELF := core1.elf
 
 # Paths to C, C++, and assembly source files.
-C_SRCS := core1.c
+C_SRCS += core1.c
+C_SRCS += exception_handler.c
 CXX_SRCS :=
 ASM_SRCS :=
 
