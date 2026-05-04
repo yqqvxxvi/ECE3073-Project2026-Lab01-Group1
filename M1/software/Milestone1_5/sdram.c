@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
-#include "../Dram_2_bsp/system.h"
-#include "../Dram_2_bsp/HAL/inc/sys/alt_stdio.h"
+#include <system.h>
+#include <io.h>
+#include <sys/alt_stdio.h>
 #include "sdram.h"
 
 int sdram_test_memory(volatile uint8_t *start, volatile uint8_t *end, uint8_t test_val)
@@ -90,4 +92,32 @@ void sdram_quick_probe(void)
         alt_putstr("Readback pass\n");
     else
         alt_putstr("Readback fail\n");
+}
+
+void sdram_write_array(uint32_t offset, const uint8_t *data, uint32_t len)
+{
+    volatile uint8_t *mem =
+        (volatile uint8_t *)(NEW_SDRAM_CONTROLLER_0_BASE + offset);
+
+    for (uint32_t i = 0; i < len; i++) {
+        mem[i] = data[i];
+    }
+}
+
+void sdram_read_string(uint32_t offset, char *out, uint32_t max_len)
+{
+    volatile uint8_t *mem =
+        (volatile uint8_t *)(NEW_SDRAM_CONTROLLER_0_BASE + offset);
+
+    if (max_len == 0) return;
+
+    uint32_t i;
+    for (i = 0; i < max_len - 1; i++) {
+        uint8_t b = mem[i];
+        out[i] = (char)b;
+        if (b == 0) {
+            return;
+        }
+    }
+    out[i] = '\0';
 }

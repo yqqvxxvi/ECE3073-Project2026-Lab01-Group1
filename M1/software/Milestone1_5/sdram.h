@@ -13,4 +13,7 @@ int sdram_test_memory(volatile uint8_t *start, volatile uint8_t *end, uint8_t te
 int sdram_run_test(void);
 void sdram_quick_probe(void);
 
+void sdram_write_array(uint32_t offset, const uint8_t *data, uint32_t len);
+void sdram_read_string(uint32_t offset, char *out, uint32_t max_len);
+
 #endif
