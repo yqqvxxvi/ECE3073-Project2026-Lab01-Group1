@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <io.h>
-#include <system.h>
+#include <VGA_controller\software\Milestone1_5_bsp\system.h>
 #include "sys/alt_stdio.h"
 
 #include "image_data.h"
