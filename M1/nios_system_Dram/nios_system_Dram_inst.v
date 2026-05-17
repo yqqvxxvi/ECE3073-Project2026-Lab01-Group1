@@ -32,14 +32,10 @@
 		.sw0_8_export        (<connected-to-sw0_8_export>),        //        sw0_8.export
 		.uart_0_rxd          (<connected-to-uart_0_rxd>),          //       uart_0.rxd
 		.uart_0_txd          (<connected-to-uart_0_txd>),          //             .txd
-		.vga_CLK             (<connected-to-vga_CLK>),             //          vga.CLK
-		.vga_HS              (<connected-to-vga_HS>),              //             .HS
-		.vga_VS              (<connected-to-vga_VS>),              //             .VS
-		.vga_BLANK           (<connected-to-vga_BLANK>),           //             .BLANK
-		.vga_SYNC            (<connected-to-vga_SYNC>),            //             .SYNC
-		.vga_R               (<connected-to-vga_R>),               //             .R
-		.vga_G               (<connected-to-vga_G>),               //             .G
-		.vga_B               (<connected-to-vga_B>),               //             .B
-		.yellow_light_export (<connected-to-yellow_light_export>)  // yellow_light.export
+		.yellow_light_export (<connected-to-yellow_light_export>), // yellow_light.export
+		.pixel_data_export   (<connected-to-pixel_data_export>),   //   pixel_data.export
+		.camera_ready_export (<connected-to-camera_ready_export>), // camera_ready.export
+		.img_addr_export     (<connected-to-img_addr_export>),     //     img_addr.export
+		.wren_export         (<connected-to-wren_export>)          //         wren.export
 	);
 

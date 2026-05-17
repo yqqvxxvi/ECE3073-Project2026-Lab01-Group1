@@ -33,15 +33,11 @@ module nios_system_Dram (
 	sw0_8_export,
 	uart_0_rxd,
 	uart_0_txd,
-	vga_CLK,
-	vga_HS,
-	vga_VS,
-	vga_BLANK,
-	vga_SYNC,
-	vga_R,
-	vga_G,
-	vga_B,
-	yellow_light_export);	
+	yellow_light_export,
+	pixel_data_export,
+	camera_ready_export,
+	img_addr_export,
+	wren_export);	
 
 	inout		accel_I2C_SDAT;
 	output		accel_I2C_SCLK;
@@ -76,13 +72,9 @@ module nios_system_Dram (
 	input	[8:0]	sw0_8_export;
 	input		uart_0_rxd;
 	output		uart_0_txd;
-	output		vga_CLK;
-	output		vga_HS;
-	output		vga_VS;
-	output		vga_BLANK;
-	output		vga_SYNC;
-	output	[3:0]	vga_R;
-	output	[3:0]	vga_G;
-	output	[3:0]	vga_B;
 	output		yellow_light_export;
+	output	[3:0]	pixel_data_export;
+	input		camera_ready_export;
+	output	[16:0]	img_addr_export;
+	output		wren_export;
 endmodule
