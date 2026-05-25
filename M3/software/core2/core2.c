@@ -378,10 +378,13 @@ void generate_text_image_to_sdram(const char *reading)
 
     /* Text */
     char safe_msg[] = "HELLO WHOEVER IS READING THIS";
-    draw_string_to_sdram(30, 60, safe_msg, 0xF, 1);
-    char safe_msg2[] = "SPI INFERRED RESULT";
-    draw_string_to_sdram(30, 95, safe_msg2, 0xE, 2);
-    draw_string_to_sdram(30, 125, reading, 0xC, 2);
+	draw_string_to_sdram(30, 60, safe_msg, 0xF, 1);
+	char safe_msg2[] = "SPI INFERRED RESULT";
+	draw_string_to_sdram(30, 95, safe_msg2, 0xE, 2);
+	char safe_msg3[6];
+	strncpy(safe_msg3, reading, sizeof(safe_msg3) - 1);
+	safe_msg3[sizeof(safe_msg3) - 1] = '\0';
+	draw_string_to_sdram(30, 125, safe_msg3, 0xC, 2);
 
 }
 
@@ -412,6 +415,7 @@ void draw_welcome_screen(void)
         sdram_set_pixel(x, VGA_HEIGHT - 1, 0xF);
         sdram_set_pixel(x, VGA_HEIGHT - 2, 0xF);
     }
+
     for (int y = 0; y < VGA_HEIGHT; y++) {
         sdram_set_pixel(0, y, 0xF);
         sdram_set_pixel(1, y, 0xF);
@@ -714,7 +718,7 @@ int is_all_digits(const char *s)
 
 int is_valid_5digit_reading(const char *reading)
 {
-    if (strlen(reading) <= REQUIRED_DIGITS) {
+    if (strlen(reading) != REQUIRED_DIGITS) {
         return 0;
     }
 
@@ -912,7 +916,8 @@ void process_complete_reading(const char *reading, alt_mutex_dev* mutex)
 
     if (is_valid_5digit_reading(reading)) {
 
-    	strncpy(current_5digit_reading, reading,5);
+    	strncpy(current_5digit_reading, reading, REQUIRED_DIGITS);
+    	current_5digit_reading[REQUIRED_DIGITS] = '\0';
         valid_5digit_available = 1;
         reading_locked_waiting_for_action = 1;
         morse_done_waiting_for_key1 = 0;
@@ -925,16 +930,16 @@ void process_complete_reading(const char *reading, alt_mutex_dev* mutex)
 
 //        beep_short();
 //        generate_text_image_to_sdram(current_5digit_reading);
-        uint32_t start_time, end_time;
-        start_time = IORD_32DIRECT(timer, 0);
+        //uint32_t start_time, end_time;
+        //start_time = IORD_32DIRECT(timer, 0);
 
 
-        clear_sdram_image(0x0);            // wipe SDRAM frame buffer to black
-		generate_text_image_to_sdram(current_5digit_reading);    // build the text + background in SDRAM
-		display_sdram_image();             // push every pixel from SDRAM to the VGA pixel buffer
+        //clear_sdram_image(0x0);            // wipe SDRAM frame buffer to black
+		//generate_text_image_to_sdram(current_5digit_reading);    // build the text + background in SDRAM
+		//display_sdram_image();             // push every pixel from SDRAM to the VGA pixel buffer
 
-		end_time = IORD_32DIRECT(timer, 0);
-		printf("VGA Time(us): %u\n\n",(unsigned int)(end_time-start_time));
+		//end_time = IORD_32DIRECT(timer, 0);
+		//printf("VGA Time(us): %u\n\n",(unsigned int)(end_time-start_time));
 //		send_to_core1_int(0x30,1);
 
 
@@ -981,8 +986,11 @@ void process_received_byte(alt_mutex_dev* mutex)
 
         reading_buffer[reading_index] = '\0';
 
-        if (reading_index > 0) {
-            process_complete_reading(reading_buffer,mutex);
+        if (reading_index == REQUIRED_DIGITS) {
+            process_complete_reading(reading_buffer, mutex);
+        }
+        else if (reading_index > 0) {
+            printf("Discarding incomplete/misaligned frame: %s\n", reading_buffer);
         }
 
         reset_reading_buffer();
@@ -993,21 +1001,25 @@ void process_received_byte(alt_mutex_dev* mutex)
         return;
     }
 
-    if ((b >= '0' && b <= '9') || b == NO_READING_BYTE) {
+    if (b >= '0' && b <= '9') {
 
-        if (reading_index < MAX_READING_LEN - 1) {
+        if (reading_index < REQUIRED_DIGITS) {
             reading_buffer[reading_index++] = (char)b;
             reading_buffer[reading_index] = '\0';
         }
         else {
-            printf("Reading buffer overflow. Resetting frame.\n");
+            /*
+             * More than 5 digits before newline means we are out of sync.
+             * Reset and wait for the next clean frame.
+             */
+            printf("Too many digits before newline. Resetting frame.\n");
             reset_reading_buffer();
         }
 
         return;
     }
 
-    printf("Unknown SPI byte: 0x%02X\n", b);
+//    printf("Unknown SPI byte: 0x%02X\n", b);
 
     reset_reading_buffer();
 }
@@ -1129,6 +1141,204 @@ alt_32 x_axis;
 alt_32 y_axis;
 alt_32 z_axis;
 
+#define SCREEN_W VGA_WIDTH
+#define SCREEN_H VGA_HEIGHT
+
+// =====================================================
+// Switch Mapping
+// =====================================================
+// SW3 = player1
+// SW5 = player2
+
+// =====================================================
+
+// Colors
+#define COLOR_BG     0x0
+#define COLOR_P1     0xF
+#define COLOR_P2     0xC
+#define COLOR_BALL   0xA
+
+// Paddle
+#define PADDLE_W      6
+#define PADDLE_H      40
+#define PADDLE_SPEED  4
+
+// Ball
+#define BALL_SIZE     6
+
+// =====================================================
+// Draw rectangle
+// =====================================================
+void draw_rect(int x, int y, int w, int h, unsigned char color)
+{
+    int i, j;
+
+    for (j = 0; j < h; j++)
+    {
+        for (i = 0; i < w; i++)
+        {
+            sdram_set_pixel(x + i, y + j, color);
+        }
+    }
+}
+
+// =====================================================
+// Pong Game Function
+// Call repeatedly inside while(1)
+// =====================================================
+void pong_game(int sw)
+{
+    // ============================================
+    // Static variables preserve game state
+    // ============================================
+    static int initialized = 0;
+
+    static int p1_y;
+    static int p2_y;
+
+    static int ball_x;
+    static int ball_y;
+
+    static int ball_dx;
+    static int ball_dy;
+
+    static int p1_x;
+    static int p2_x;
+
+    // ============================================
+    // SW0 = GAME ENABLE
+    // ============================================
+    if (!(sw & 0x4))
+    {
+        initialized = 0;
+        clear_sdram_image(0x0);
+        return;
+    }
+
+    // ============================================
+    // Initialize game once
+    // ============================================
+    if (!initialized)
+    {
+        p1_y = SCREEN_H / 2 - PADDLE_H / 2;
+        p2_y = SCREEN_H / 2 - PADDLE_H / 2;
+
+        ball_x = SCREEN_W / 2;
+        ball_y = SCREEN_H / 2;
+
+        ball_dx = 2;
+        ball_dy = 2;
+
+        p1_x = 10;
+        p2_x = SCREEN_W - 10 - PADDLE_W;
+
+        initialized = 1;
+    }
+
+    // ============================================
+    // Erase old frame
+    // ============================================
+    clear_sdram_image(0x0);
+
+    // ============================================
+    // Paddle controls
+    // ============================================
+
+    // Left paddle
+    if ((sw & 0x8)==0)
+        p1_y -= PADDLE_SPEED;
+
+    if ((sw & 0x8)==8)
+        p1_y += PADDLE_SPEED;
+
+    // Right paddle
+    if ((sw & 0x32)==0)
+        p2_y -= PADDLE_SPEED;
+
+    if ((sw & 0x32)==32)
+        p2_y += PADDLE_SPEED;
+
+    // ============================================
+    // Limit paddles
+    // ============================================
+    if (p1_y < 0)
+        p1_y = 0;
+
+    if (p1_y > SCREEN_H - PADDLE_H)
+        p1_y = SCREEN_H - PADDLE_H;
+
+    if (p2_y < 0)
+        p2_y = 0;
+
+    if (p2_y > SCREEN_H - PADDLE_H)
+        p2_y = SCREEN_H - PADDLE_H;
+
+    // ============================================
+    // Move ball
+    // ============================================
+    ball_x += ball_dx;
+    ball_y += ball_dy;
+
+    // Top/bottom collision
+    if (ball_y <= 0 || ball_y >= SCREEN_H - BALL_SIZE)
+    {
+        ball_dy = -ball_dy;
+    }
+
+    // ============================================
+    // Left paddle collision
+    // ============================================
+    if (ball_x <= p1_x + PADDLE_W &&
+        ball_y + BALL_SIZE >= p1_y &&
+        ball_y <= p1_y + PADDLE_H)
+    {
+        ball_dx = -ball_dx;
+        ball_x = p1_x + PADDLE_W + 1;
+    }
+
+    // ============================================
+    // Right paddle collision
+    // ============================================
+    if (ball_x + BALL_SIZE >= p2_x &&
+        ball_y + BALL_SIZE >= p2_y &&
+        ball_y <= p2_y + PADDLE_H)
+    {
+        ball_dx = -ball_dx;
+        ball_x = p2_x - BALL_SIZE - 1;
+    }
+
+    // ============================================
+    // Reset ball if score
+    // ============================================
+    if (ball_x < 0 || ball_x > SCREEN_W)
+    {
+        ball_x = SCREEN_W / 2;
+        ball_y = SCREEN_H / 2;
+
+        ball_dx = (rand() % 2) ? 2 : -2;
+        ball_dy = (rand() % 2) ? 2 : -2;
+    }
+
+    // ============================================
+    // Draw paddles
+    // ============================================
+    draw_rect(p1_x, p1_y,
+              PADDLE_W, PADDLE_H,
+              COLOR_P1);
+
+    draw_rect(p2_x, p2_y,
+              PADDLE_W, PADDLE_H,
+              COLOR_P2);
+
+    // ============================================
+    // Draw ball
+    // ============================================
+    draw_rect(ball_x, ball_y,
+              BALL_SIZE, BALL_SIZE,
+              COLOR_BALL);
+
+    usleep(16000);
+}
 /* ---------------- Main ---------------- */
 int main(void)
 {
@@ -1156,6 +1366,7 @@ int main(void)
 
 //	alt_printf("Startup image drawn.\n");
 	int swBase=0;
+	int sw0;
 	int sw1;
 	int sw2;
 	int keyBase=0;
@@ -1170,8 +1381,9 @@ int main(void)
 		keyBase=IORD_16DIRECT(Shared_Sdram_Flag,0x14);
     	altera_avalon_mutex_unlock(mutex);
 
-		sw1 = swBase & 0x1;
-		sw2 = swBase & 0x2;
+		sw0 = swBase & 0x1;
+		sw1 = swBase & 0x2;
+		sw2 = swBase & 0x4;
 		curr_key0 = keyBase & 0x1;
 		curr_key1 = (keyBase & 0x2);
 
@@ -1179,8 +1391,8 @@ int main(void)
 //		printf("0:%u\n",curr_key0);
 //		usleep(5000);
 //		printf("1:%u\n",curr_key1);
-
-		if (sw1 == 1)
+		if (sw2==0){
+		if (sw0 == 1)
 		{
 			accelerometer_main(&pitch, &roll, &z);
 
@@ -1192,10 +1404,10 @@ int main(void)
 			}
 		}
 
-		else if (sw2 == 2)
+		else if (sw1 == 2)
 			{
-			const char *reading="12345";
-			strncpy(current_5digit_reading, reading,5);
+//			const char *reading="12345";
+//			strncpy(current_5digit_reading, reading,5);
 			if (current_5digit_reading[0] != '\0') {
 				hex_scroll_string(current_5digit_reading);
 				}
@@ -1211,8 +1423,9 @@ int main(void)
 
 		if ((curr_key0==1) & (prev_key0==0))
 		{
-			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading);
+			char* current_5digit_reading_test="12345";
 //			handle_key1_store();
+			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading_test);
 			printf("key0\n");
 			altera_avalon_mutex_lock(mutex, 2);
 			IOWR_16DIRECT(Shared_Sdram_Flag, 0x30,numeric_value);
@@ -1222,7 +1435,9 @@ int main(void)
 
 		if ((curr_key1==2) & (prev_key1==0))
 		{
-			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading);
+			char* current_5digit_reading_test="12345";
+			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading_test);
+//			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading);
 //			handle_key1_store();
 			printf("key1\n");
 			altera_avalon_mutex_lock(mutex, 2);
@@ -1235,18 +1450,16 @@ int main(void)
         /*
          * Process completed SPI byte outside ISR.
          */
-        if (spi_byte_ready) {
-        	uint32_t start_time, end_time;
-        	start_time = IORD_32DIRECT(timer, 0);
+		if (spi_byte_ready) {
+		    uint32_t start_time, end_time;
+		    start_time = IORD_32DIRECT(timer, 0);
 
-        	spi_byte_ready = 0;
-        	process_received_byte(mutex);
+		    spi_byte_ready = 0;
+		    process_received_byte(mutex);
 
-        	end_time = IORD_32DIRECT(timer, 0);
-            process_received_byte(mutex);
-//            printf("spi Time(us): %u\n\n",(unsigned int)(end_time-start_time));
-
-        }
+		    end_time = IORD_32DIRECT(timer, 0);
+		//  printf("spi Time(us): %u\n\n",(unsigned int)(end_time-start_time));
+		}
 
         /*
          * Request next byte from ESP32 only while SPI is running
@@ -1271,6 +1484,12 @@ int main(void)
         prev_key1=curr_key1;
 
         short_delay(MAIN_LOOP_DELAY);
+    }
+
+    else{
+    	pong_game(swBase);
+    }
+
     }
 
     return 0;
