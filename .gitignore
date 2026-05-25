@@ -92,10 +92,10 @@ synthesis
 *.qsys_edit/
 *.qsys_edit/*
 */synthesis/
-*/*.bsf
+# */*.bsf
 */*.xml
 *.sopcinfo
-*/*_bb.v
+# */*_bb.v
 */*_inst.v
 
 # Additional removals
@@ -103,8 +103,8 @@ synthesis
 *output_files/
 *greybox_tmp/
 *RemoteSystemsTempFiles
-*.ppf
-*.qip
+# *.ppf
+# *.qip
 
 # Software removals
 software/*_bsp/*
