@@ -1,4 +1,4 @@
-# ECE3072 Mini Project
+# ECE3073 Mini Project
 ## Real-Time Embedded Vision Using Arm – Grove AI V2 and NIOS-based Multitasking System on FPGA
 
 A multitasking embedded system implemented on the **Intel DE10-Lite FPGA** using a **dual-core NIOS II** soft processor architecture, integrated with the **Seeed Grove Vision AI V2** module for real-time embedded vision.
@@ -126,4 +126,4 @@ Common things to double-check first:
 
 ## License
 
-This project is developed for academic purposes as part of **ECE3072** at Monash University.
+This project is developed for academic purposes as part of **ECE3073** at Monash University.
