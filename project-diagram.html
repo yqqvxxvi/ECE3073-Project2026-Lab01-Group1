@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ECE3073 FPGA System Diagram — Lab01 Group1</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.28.1/dist/cytoscape.min.js"></script>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --bg2: #ffffff;
+      --card: #ffffff;
+      --border: #c5cdd8;
+      --text: #1a2332;
+      --muted: #4a5568;
+      --accent: #1d4ed8;
+      --accent2: #0369a1;
+      --shadow: 0 1px 4px rgba(0,0,0,0.08);
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: #fff;
+      border-bottom: 2px solid var(--border);
+      padding: 0.85rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; }
+    .brand-icon {
+      width: 42px; height: 42px; border-radius: 8px;
+      background: var(--accent);
+      display: grid; place-items: center; font-weight: 800; font-size: 0.75rem; color: #fff;
+    }
+    .brand h1 { font-size: 1.15rem; font-weight: 700; color: var(--text); }
+    .brand p { font-size: 0.85rem; color: var(--muted); }
+    nav { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+    nav a {
+      color: var(--accent); text-decoration: none; font-size: 0.9rem;
+      padding: 0.4rem 0.7rem; border-radius: 6px;
+    }
+    nav a:hover { background: #e8eef5; }
+    .toolbar { display: flex; gap: 0.5rem; align-items: center; }
+    button, .btn {
+      cursor: pointer; border: 1px solid var(--border);
+      background: #fff; color: var(--text);
+      padding: 0.5rem 0.9rem; border-radius: 6px; font-size: 0.9rem;
+    }
+    button:hover { border-color: var(--accent); background: #eff6ff; }
+    main { max-width: 1400px; margin: 0 auto; padding: 1.25rem 1.5rem 3rem; }
+    section { margin-bottom: 2rem; scroll-margin-top: 80px; }
+    .section-title {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 0.85rem; flex-wrap: wrap; gap: 0.5rem;
+    }
+    .section-title h2 { font-size: 1.35rem; font-weight: 700; color: var(--text); }
+    .section-title span { color: var(--muted); font-size: 0.9rem; }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem 1.35rem;
+      box-shadow: var(--shadow);
+    }
+    .grid { display: grid; gap: 1rem; }
+    .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+    .stat { text-align: center; padding: 1rem; }
+    .stat .num { font-size: 2rem; font-weight: 800; color: var(--accent); }
+    .stat .lbl { font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem; }
+    .badge {
+      display: inline-block; font-size: 0.8rem; padding: 0.2rem 0.55rem;
+      border-radius: 4px; border: 1px solid var(--border); margin: 0.1rem;
+    }
+    .badge-v { background: #dbeafe; color: #1e40af; }
+    .badge-sv { background: #cffafe; color: #0e7490; }
+    .badge-q { background: #fef3c7; color: #92400e; }
+    .badge-c { background: #d1fae5; color: #065f46; }
+    .badge-ino { background: #fee2e2; color: #991b1b; }
+    .badge-bdf { background: #ede9fe; color: #5b21b6; }
+    .cy-wrap {
+      width: 100%; height: 480px; border-radius: 8px;
+      border: 1px solid var(--border); background: #fafbfc;
+      position: relative; overflow: hidden;
+    }
+    .cy-toolbar {
+      position: absolute; top: 8px; right: 8px; z-index: 5;
+      display: flex; gap: 4px;
+    }
+    .cy-toolbar button { padding: 0.3rem 0.55rem; font-size: 0.72rem; }
+    .mermaid-wrap {
+      overflow-x: auto; padding: 1rem;
+      background: #fff; border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .legend { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.75rem; font-size: 0.85rem; color: var(--text); }
+    .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: middle; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 0.65rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--text); font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; background: #eef2f7; }
+    tr:nth-child(even) td { background: #f8fafc; }
+    tr:hover td { background: #eff6ff; }
+    code { background: #eef2f7; padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 0.88em; color: #1e3a5f; }
+    .detail-panel {
+      margin-top: 1rem; padding: 1rem; border-radius: 8px;
+      border: 2px solid var(--accent); background: #eff6ff;
+      display: none;
+    }
+    .detail-panel.visible { display: block; }
+    .detail-panel h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .detail-panel pre {
+      font-size: 0.75rem; overflow-x: auto; color: var(--muted);
+      white-space: pre-wrap; margin-top: 0.5rem;
+    }
+    .file-list { max-height: 200px; overflow-y: auto; font-size: 0.78rem; color: var(--muted); }
+    .file-list code { color: var(--accent); }
+    footer {
+      text-align: center; padding: 2rem; color: var(--muted); font-size: 0.9rem;
+      border-top: 1px solid var(--border); background: #fff;
+    }
+    #tooltip {
+      position: fixed; pointer-events: none; z-index: 9999;
+      background: #fff; color: var(--text);
+      padding: 0.6rem 0.85rem; border-radius: 6px; font-size: 0.85rem;
+      max-width: 360px; display: none; border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    .milestone-tabs { display: flex; gap: 0.5rem; margin-bottom: 0.85rem; flex-wrap: wrap; }
+    .milestone-tabs button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    ul.compact { padding-left: 1.2rem; font-size: 0.85rem; color: var(--muted); }
+    ul.compact li { margin: 0.25rem 0; }
+  </style>
+</head>
+<body>
+  <div id="tooltip"></div>
+  <header>
+    <div class="brand">
+      <div class="brand-icon">FPGA</div>
+      <div>
+        <h1>ECE3073 System Architecture</h1>
+        <p>Real-Time Embedded Vision · DE10-Lite · Dual Nios II · Grove AI V2</p>
+      </div>
+    </div>
+    <nav>
+      <a href="#overview">Overview</a>
+      <a href="#hierarchy">Hierarchy</a>
+      <a href="#signals">Signal Flow</a>
+      <a href="#simulation">Simulation</a>
+      <a href="#deployment">Deployment</a>
+      <a href="#files">Files</a>
+    </nav>
+    <div class="toolbar">
+      <button type="button" id="fitAll">Fit All Graphs</button>
+    </div>
+  </header>
+
+  <main>
+  <!-- OVERVIEW -->
+  <section id="overview">
+    <div class="section-title">
+      <h2>Project Overview</h2>
+      <span>Monash ECE3073 · Intel MAX 10 10M50DAF484C7G · Quartus 18.1</span>
+    </div>
+    <div class="grid grid-4">
+      <div class="card stat"><div class="num" id="statModules">—</div><div class="lbl">Unique HDL Modules</div></div>
+      <div class="card stat"><div class="num" id="statQsys">11</div><div class="lbl">Platform Designer (.qsys)</div></div>
+      <div class="card stat"><div class="num" id="statSw">12+</div><div class="lbl">Nios II Software Apps</div></div>
+      <div class="card stat"><div class="num">4</div><div class="lbl">Milestones (M1–M3 + Root)</div></div>
+    </div>
+    <div class="card" style="margin-top:1rem">
+      <p style="font-size:0.9rem;color:var(--muted);margin-bottom:0.75rem">
+        Multitasking embedded vision on <strong>Intel DE10-Lite</strong> with <strong>dual-core Nios II</strong>,
+        <strong>SDRAM</strong> matrix workloads, <strong>VGA</strong> framebuffer, <strong>SPI</strong> to
+        <strong>Grove Vision AI V2 / ESP32</strong>, and <strong>μC/OS-II RTOS</strong> in Milestone 3.
+      </p>
+      <div class="milestone-tabs" id="milestoneTabs">
+        <button type="button" class="active" data-ms="root">Root (nios_led_test)</button>
+        <button type="button" data-ms="m1">M1 — VGA + SPI Vision</button>
+        <button type="button" data-ms="m2">M2 — Dual-Core + Morse</button>
+        <button type="button" data-ms="m3">M3 — RTOS + Peripherals</button>
+      </div>
+      <div class="mermaid-wrap">
+        <pre class="mermaid" id="overviewMermaid">
+flowchart TB
+  subgraph BOARD["DE10-Lite MAX 10"]
+    CLK["CLOCK_50 · PIN_P11"]
+    RST["KEY[0] reset_n"]
+    subgraph FPGA["FPGA Fabric"]
+      TOP["Top: nios_led_test / ECE3073_*"]
+      QSYS["Platform Designer Subsystem"]
+      CUSTOM["Custom RTL: VGA, pixel RAM, us_counter, latency_counter"]
+      TOP --> QSYS
+      TOP --> CUSTOM
+    end
+    LEDR["LEDR[9:0]"]
+    VGA_OUT["VGA R/G/B HS/VS"]
+    SPI_HW["SPI ↔ Grove AI / ESP32"]
+    SDRAM_HW["SDRAM Interface"]
+  end
+  subgraph HOST["Host PC"]
+    QUARTUS["Quartus Prime 18.1"]
+    ECLIPSE["Nios II SBT / Eclipse"]
+    PROG["USB Blaster Programmer"]
+  end
+  QUARTUS -->|".sof"| PROG --> FPGA
+  ECLIPSE -->|JTAG download| QSYS
+  SPI_HW --- ESP32["ESP32-C3 SPI Slave"]
+        </pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- HIERARCHY -->
+  <section id="hierarchy">
+    <div class="section-title">
+      <h2>Module Hierarchy</h2>
+      <span>Click a node for details · Scroll to zoom · Drag to pan</span>
+    </div>
+    <div class="card">
+      <div class="cy-wrap" id="cyHierarchy">
+        <div class="cy-toolbar">
+          <button type="button" data-cy="cyHierarchy" data-action="zoom-in">+</button>
+          <button type="button" data-cy="cyHierarchy" data-action="zoom-out">−</button>
+          <button type="button" data-cy="cyHierarchy" data-action="fit">Fit</button>
+        </div>
+      </div>
+      <div class="legend" id="hierLegend"></div>
+      <div id="hierDetail" class="detail-panel"></div>
+    </div>
+  </section>
+
+  <!-- SIGNAL FLOW -->
+  <section id="signals">
+    <div class="section-title">
+      <h2>Signal &amp; Data Flow</h2>
+      <span>Clock domains · Buses · Inter-processor shared memory</span>
+    </div>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3 style="font-size:0.95rem;margin-bottom:0.5rem">Clock &amp; Reset Domains</h3>
+        <table>
+          <thead><tr><th>Domain</th><th>Source</th><th>Consumers</th></tr></thead>
+          <tbody id="clockTable"></tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3 style="font-size:0.95rem;margin-bottom:0.5rem">Important Buses &amp; Signals</h3>
+        <table>
+          <thead><tr><th>Signal / Bus</th><th>Width</th><th>Role</th></tr></thead>
+          <tbody id="busTable"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card" style="margin-top:1rem">
+      <div class="cy-wrap" id="cySignals" style="height:420px">
+        <div class="cy-toolbar">
+          <button type="button" data-cy="cySignals" data-action="zoom-in">+</button>
+          <button type="button" data-cy="cySignals" data-action="zoom-out">−</button>
+          <button type="button" data-cy="cySignals" data-action="fit">Fit</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SIMULATION -->
+  <section id="simulation">
+    <div class="section-title">
+      <h2>Simulation Pipeline</h2>
+      <span>No dedicated testbenches in repo — ModelSim flow via Quartus</span>
+    </div>
+    <div class="card">
+      <div class="mermaid-wrap">
+        <pre class="mermaid">
+flowchart LR
+  A["HDL Sources<br/>.v .sv"] --> B["Quartus Analysis &amp; Elaboration"]
+  B --> C{"Simulation?"}
+  C -->|Megafunction libs| D["altera_mf / lpm / altera_avalon"]
+  C -->|No *_tb.v found| E["Use Platform Designer<br/>or manual testbench"]
+  D --> F["ModelSim-Altera / Questa"]
+  F --> G["Waveform: clk, reset_n,<br/>Avalon-MM, VGA timing"]
+  B --> H["Timing / Fitting"]
+  H --> I["Programming .sof"]
+        </pre>
+      </div>
+      <p style="margin-top:0.75rem;font-size:0.82rem;color:var(--muted)">
+        Wizard IP blocks (<code>pixel.v</code>, <code>lab3Pll.v</code>, <code>VGAdriver.v</code>) reference
+        <code>altera_mf</code> and <code>lpm</code> simulation libraries. Software-in-the-loop testing uses
+        JTAG UART and on-board SPI/UART to ESP32 rather than RTL testbenches.
+      </p>
+    </div>
+  </section>
+
+  <!-- DEPLOYMENT -->
+  <section id="deployment">
+    <div class="section-title">
+      <h2>FPGA Deployment Flow</h2>
+      <span>Quartus → Programmer → Dual-core Eclipse launch</span>
+    </div>
+    <div class="card">
+      <div class="mermaid-wrap">
+        <pre class="mermaid">
+flowchart TD
+  S1["Open .qpf in Quartus 18.1"] --> S2["Platform Designer: edit .qsys"]
+  S2 --> S3["Generate HDL → nios_system*.v"]
+  S3 --> S4["Compile TOP_LEVEL_ENTITY<br/>(nios_led_test / ECE3073_*)"]
+  S4 --> S5["output_files/*.sof"]
+  S5 --> S6["Tools → Programmer → USB Blaster"]
+  S6 --> S7["Program MAX 10 FPGA"]
+  S7 --> S8["Nios II SBT: open software/ workspace"]
+  S8 --> S9["Build BSP + Application per core"]
+  S9 --> S10["Run Configurations ×2<br/>Core0 + Core1 JTAG"]
+  S10 --> S11["Launch Group → Run both CPUs"]
+  S11 --> S12["ESP32/Grove AI firmware via Arduino IDE"]
+        </pre>
+      </div>
+    </div>
+    <div class="card" style="margin-top:1rem">
+      <h3 style="font-size:0.95rem;margin-bottom:0.5rem">Quartus Projects by Milestone</h3>
+      <table>
+        <thead><tr><th>Folder</th><th>Project</th><th>Top Entity</th><th>Qsys System</th></tr></thead>
+        <tbody id="quartusTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- FILES -->
+  <section id="files">
+    <div class="section-title">
+      <h2>File Dependency Graph</h2>
+      <span>Color-coded by type · Software ↔ hardware mapping</span>
+    </div>
+    <div class="card">
+      <div class="cy-wrap" id="cyFiles" style="height:520px">
+        <div class="cy-toolbar">
+          <button type="button" data-cy="cyFiles" data-action="zoom-in">+</button>
+          <button type="button" data-cy="cyFiles" data-action="zoom-out">−</button>
+          <button type="button" data-cy="cyFiles" data-action="fit">Fit</button>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i style="background:#bfdbfe;border:1px solid #2563eb"></i> Verilog (.v)</span>
+        <span><i style="background:#a5f3fc;border:1px solid #0891b2"></i> SystemVerilog (.sv)</span>
+        <span><i style="background:#fde68a;border:1px solid #ca8a04"></i> Quartus (.qsf/.qpf)</span>
+        <span><i style="background:#bbf7d0;border:1px solid #059669"></i> Nios C (.c)</span>
+        <span><i style="background:#fecaca;border:1px solid #dc2626"></i> Arduino (.ino)</span>
+        <span><i style="background:#ddd6fe;border:1px solid #7c3aed"></i> Block Diagram (.bdf)</span>
+        <span><i style="background:#fed7aa;border:1px solid #ea580c"></i> Platform Designer (.qsys)</span>
+      </div>
+      <div id="fileDetail" class="detail-panel"></div>
+    </div>
+    <div class="card" style="margin-top:1rem">
+      <h3 style="font-size:0.95rem;margin-bottom:0.5rem">Software ↔ Hardware Targets</h3>
+      <table>
+        <thead><tr><th>Application</th><th>CPU</th><th>Tests / Uses</th><th>Key Peripherals</th></tr></thead>
+        <tbody id="swTable"></tbody>
+      </table>
+    </div>
+  </section>
+  </main>
+
+  <footer>
+  Generated from static analysis of ECE3073-Project2026-Lab01-Group1 repository ·
+  Open this file in any modern browser · Data embedded in <code>PROJECT_DATA</code>
+  </footer>
+
+<script>
+const PROJECT_DATA = {
+  meta: {
+    course: "ECE3073",
+    board: "Intel DE10-Lite (MAX 10 10M50DAF484C7G)",
+    quartus: "18.1.0 Lite Edition",
+    team: ["You Qing Liew", "Melvin", "Zhi Hang", "Kenneth Lai"]
+  },
+  milestones: {
+    root: { name: "Root", top: "nios_led_test", qsys: "nios_system.qsys", desc: "Minimal LED + accelerometer SPI demo" },
+    m1: { name: "M1", top: "ECE3073_Lab3", qsys: "nios_system_Dram.qsys", desc: "VGA framebuffer, SPI vision, SDRAM, latency measurement" },
+    m2: { name: "M2", top: "ece3073_lab6V2", qsys: "dual_processor.qsys", desc: "Dual Nios II, matrix multiply in SDRAM, Morse buzzer" },
+    m3: { name: "M3", top: "ECE3073_Milestone2", qsys: "DualProcessorPeri.qsys", desc: "Full peripherals, pixel buffer PIO, μC/OS-II RTOS" }
+  },
+  modules: [
+    { id: "nios_led_test", type: "verilog", file: "nios_led_test.v", desc: "Root top-level: DE10 pins → nios_system", children: ["nios_system"] },
+    { id: "nios_system", type: "verilog", file: "nios_system.v", desc: "Qsys-generated: single Nios II + JTAG UART + SPI + LED PIO", children: ["nios2_gen2_0", "jtag_uart_0", "onchip_memory2_0", "pio_0", "spi_0", "mm_interconnect_0"] },
+    { id: "top_level", type: "verilog", file: "M1/latency_counter.v", desc: "M1 lab top: counter MSB, latency_counter, nios_system", children: ["latency_counter", "nios_system"] },
+    { id: "latency_counter", type: "verilog", file: "M1/latency_counter.v", desc: "Measures cycles between leader/follower GPIO signals", children: [] },
+    { id: "vga_controller", type: "verilog", file: "M1/vgacontroller.v", desc: "640×480 timing → 320×240 VGA_ADDR, RGB from VGA_DATA", children: [] },
+    { id: "pixel", type: "verilog", file: "M1/pixel.v", desc: "Dual-port altsyncram framebuffer (4-bit, 76800 words)", children: ["altsyncram"] },
+    { id: "lab3Pll", type: "verilog", file: "M1/lab3Pll.v", desc: "ALTPLL: CLOCK_50 → derived clocks", children: ["altpll"] },
+    { id: "VGAdriver", type: "verilog", file: "M1/VGAdriver.v", desc: "ALTPLL for VGA pixel clock from 50 MHz", children: ["altpll"] },
+    { id: "LPMcounterweek3", type: "verilog", file: "M1/LPMcounterweek3.v", desc: "20-bit up counter on clock", children: ["LPM_COUNTER"] },
+    { id: "LPMweek3", type: "verilog", file: "M1/LPMweek3.v", desc: "8-bit LPM divide", children: ["LPM_DIVIDE"] },
+    { id: "us_counter", type: "verilog", file: "M2/us_counter.v", desc: "50 MHz → 1 MHz → microsecond counter export to Nios", children: [] },
+    { id: "dual_processor", type: "qsys", file: "M2/dual_processor.qsys", desc: "Dual Nios II, SDRAM, VGA, SPI, mutex, us_counter, lights, buzzer", children: ["nios2_core0", "nios2_core1", "sdram", "vga", "spi", "us_counter"] },
+    { id: "DualProcessorPeri", type: "qsys", file: "M3/DualProcessorPeri.qsys", desc: "Production dual-core + pixel_buffer PIO + image_address + wren", children: ["nios2_core0", "nios2_core1", "shared_sdram", "pixel_buffer", "spi"] },
+    { id: "nios_system_Dram", type: "qsys", file: "M1/nios_system_Dram.qsys", desc: "M1 system with DRAM/SDRAM and VGA path", children: ["nios2", "sdram", "vga", "spi"] },
+    { id: "nios_system_Dram_no_VGA", type: "qsys", file: "M1/nios_system_Dram_no_VGA.qsys", desc: "M1 variant without VGA in Qsys", children: ["nios2", "sdram", "spi"] }
+  ],
+  hierarchyEdges: [
+    { source: "DE10-Lite", target: "nios_led_test", label: "pins" },
+    { source: "nios_led_test", target: "nios_system", label: "u0" },
+    { source: "nios_system", target: "nios2_gen2_0", label: "CPU" },
+    { source: "nios_system", target: "mm_interconnect_0", label: "Avalon-MM" },
+    { source: "mm_interconnect_0", target: "jtag_uart_0", label: "data" },
+    { source: "mm_interconnect_0", target: "onchip_memory2_0", label: "instr/data" },
+    { source: "mm_interconnect_0", target: "pio_0", label: "LED" },
+    { source: "mm_interconnect_0", target: "spi_0", label: "accel SPI" },
+    { source: "top_level", target: "latency_counter", label: "u0" },
+    { source: "top_level", target: "nios_system", label: "u1" },
+    { source: "ECE3073_Lab3.bdf", target: "vga_controller", label: "VGA timing" },
+    { source: "ECE3073_Lab3.bdf", target: "pixel", label: "framebuffer" },
+    { source: "ECE3073_Lab3.bdf", target: "VGAdriver", label: "pixel clk" },
+    { source: "ECE3073_Lab3.bdf", target: "lab3Pll", label: "sys clk" },
+    { source: "ECE3073_Lab3.bdf", target: "nios_system_Dram", label: "u0" },
+    { source: "ece3073_lab6V2.bdf", target: "dual_processor", label: "u0" },
+    { source: "ece3073_lab6V2.bdf", target: "us_counter", label: "timing IP" },
+    { source: "ECE3073_Milestone2.bdf", target: "DualProcessorPeri", label: "u0" },
+    { source: "ECE3073_Milestone2.bdf", target: "vga_controller", label: "VGA" },
+    { source: "ECE3073_Milestone2.bdf", target: "pixel", label: "RAM" },
+    { source: "dual_processor", target: "nios2_core0", label: "Core 0" },
+    { source: "dual_processor", target: "nios2_core1", label: "Core 1" },
+    { source: "DualProcessorPeri", target: "nios2_core0", label: "RTOS / matmul" },
+    { source: "DualProcessorPeri", target: "nios2_core1", label: "VGA / vision" }
+  ],
+  clocks: [
+    { domain: "CLOCK_50", source: "PIN_P11 (50 MHz)", consumers: "nios_led_test, top_level, all Qsys clk_clk, us_counter, LPM counters" },
+    { domain: "reset_n", source: "KEY[0] active-low", consumers: "nios_system rst_controller, Nios2 reset_n, onchip_memory reset" },
+    { domain: "VGA_CLK", source: "VGAdriver PLL c0", consumers: "vga_controller.VGA_CLK, pixel.port clock" },
+    { domain: "SDRAM_CLK", source: "sys_sdram_pll (M2/M3)", consumers: "SDRAM chip, Avalon SDRAM controller" },
+    { domain: "SPI_SCLK", source: "Nios SPI master / ESP32 slave", consumers: "Grove AI V2, ESP32-C3 HSPI" }
+  ],
+  buses: [
+    { name: "Avalon-MM", width: "32-bit data, 14-bit addr", role: "Nios masters → peripherals, on-chip memory, SDRAM" },
+    { name: "led_export", width: "10", role: "PIO → LEDR[9:0] on DE10-Lite" },
+    { name: "spi_accel_*", width: "1 each", role: "SPI to LIS3DH accelerometer (root) or vision module" },
+    { name: "VGA_ADDR", width: "19", role: "Framebuffer address 320×240 from vga_controller" },
+    { name: "VGA_DATA / pixel", width: "4", role: "Grayscale nibble per pixel in dual-port RAM" },
+    { name: "GPIO[2]/[10]", width: "1", role: "Leader MSB / follower flag for latency_counter (M1)" },
+    { name: "Shared SDRAM", width: "32", role: "0x01000000 flags, 0x01100000 / 0x01200000 matrices (M2/M3)" },
+    { name: "us_counter_export", width: "32", role: "Microsecond timestamp for benchmarking" }
+  ],
+  signalFlow: [
+    { source: "CLOCK_50", target: "nios_system", label: "clk" },
+    { source: "KEY[0]", target: "reset_reset_n", label: "reset" },
+    { source: "nios2_gen2_0", target: "spi_0", label: "Avalon-MM" },
+    { source: "spi_0", target: "GSENSOR", label: "MOSI/MISO/SCLK/SS" },
+    { source: "VGAdriver", target: "vga_controller", label: "VGA_CLK" },
+    { source: "vga_controller", target: "pixel", label: "rdaddress → q" },
+    { source: "Nios Core1", target: "pixel", label: "wraddress, data, wren" },
+    { source: "Nios Core0", target: "SDRAM", label: "mutex + matrix ops" },
+    { source: "ESP32", target: "SPI Master", label: "MISO 8-byte frames" },
+    { source: "Grove AI", target: "SPI", label: "Vision inference data" }
+  ],
+  quartusProjects: [
+    { folder: "(root)", project: "nios_led_test.qpf", top: "nios_led_test", qsys: "nios_system.qsys" },
+    { folder: "M1", project: "ECE3073_Lab3.qpf", top: "ECE3073_Lab3", qsys: "nios_system_Dram.qsys" },
+    { folder: "M2", project: "ece3073_lab6V2.qpf", top: "ece3073_lab6V2", qsys: "dual_processor.qsys" },
+    { folder: "M3", project: "ECE3073_Milestone2.qpf", top: "ECE3073_Milestone2", qsys: "DualProcessorPeri.qsys" },
+    { folder: "VGA_controller", project: "ECE3073_Lab3.qpf", top: "ECE3073_Lab3", qsys: "nios_system_Dram.qsys" }
+  ],
+  software: [
+    { app: "Milestone1_5", cpu: "Nios II (single)", tests: "nios_system_Dram / VGA", peripherals: "SPI, SDRAM, VGA PIO, accelerometer" },
+    { app: "SPI_INTERRUPT.c", cpu: "Nios II", tests: "SPI slave + ESP32/Grove", peripherals: "SPI regs 0x08009000, SDRAM message buffer" },
+    { app: "M2/core1", cpu: "Core 0", tests: "dual_processor", peripherals: "SDRAM mutex, us_counter, matrix init" },
+    { app: "M2/core2V3", cpu: "Core 1", tests: "dual_processor", peripherals: "VGA, HEX, Morse buzzer, SDRAM read" },
+    { app: "M3/core1 & core2", cpu: "Both", tests: "DualProcessorPeri", peripherals: "Shared SDRAM, LEDs, SPI" },
+    { app: "M3/RTOS_core1", cpu: "Core 0", tests: "μC/OS-II tasks", peripherals: "Mutex, Morse, matrix flags" },
+    { app: "M3/RTOS_core2", cpu: "Core 1", tests: "μC/OS-II + vision", peripherals: "VGA, accelerometer, HEX displays" },
+    { app: "ESP32/spi.ino", cpu: "ESP32-C3", tests: "NIOS SPI master", peripherals: "HSPI slave MODE0, 8-byte queue" },
+    { app: "ESP32/SCROLLING_NUMS_final.ino", cpu: "ESP32", tests: "UART bridge", peripherals: "Serial to FPGA/vision pipeline" }
+  ],
+  fileNodes: [
+    { id: "f_nios_led", type: "verilog", label: "nios_led_test.v", path: "nios_led_test.v" },
+    { id: "f_nios_sys", type: "verilog", label: "nios_system.v", path: "nios_system.v" },
+    { id: "f_qsys_root", type: "qsys", label: "nios_system.qsys", path: "nios_system.qsys" },
+    { id: "f_qsf_root", type: "quartus", label: "nios_led_test.qsf", path: "nios_led_test.qsf" },
+    { id: "f_vga_ctrl", type: "verilog", label: "vgacontroller.v", path: "M1/vgacontroller.v" },
+    { id: "f_pixel", type: "verilog", label: "pixel.v", path: "M1/pixel.v" },
+    { id: "f_lat", type: "verilog", label: "latency_counter.v", path: "M1/latency_counter.v" },
+    { id: "f_qsys_dram", type: "qsys", label: "nios_system_Dram.qsys", path: "M1/nios_system_Dram.qsys" },
+    { id: "f_bdf_m1", type: "bdf", label: "ECE3073_Lab3.bdf", path: "M1/ECE3073_Lab3.bdf" },
+    { id: "f_spi_int", type: "c", label: "SPI_INTERRUPT.c", path: "M1/software/.../SPI_INTERRUPT.c" },
+    { id: "f_qsys_dual", type: "qsys", label: "dual_processor.qsys", path: "M2/dual_processor.qsys" },
+    { id: "f_core1", type: "c", label: "core1.c", path: "M2/software/core1/core1.c" },
+    { id: "f_core2", type: "c", label: "core2.c", path: "M2/software/core2V3/core2.c" },
+    { id: "f_us", type: "verilog", label: "us_counter.v", path: "M2/us_counter.v" },
+    { id: "f_qsys_peri", type: "qsys", label: "DualProcessorPeri.qsys", path: "M3/DualProcessorPeri.qsys" },
+    { id: "f_rtos1", type: "c", label: "RTOS_core1.c", path: "M3/software/RTOS_core1/RTOS_core1.c" },
+    { id: "f_rtos2", type: "c", label: "core2.c (RTOS)", path: "M3/software/RTOS_core2/core2.c" },
+    { id: "f_esp_spi", type: "ino", label: "spi.ino", path: "ESP32/spi/spi.ino" },
+    { id: "f_readme", type: "doc", label: "README.md", path: "README.md" }
+  ],
+  fileEdges: [
+    { source: "f_qsf_root", target: "f_nios_led", label: "TOP_LEVEL" },
+    { source: "f_nios_led", target: "f_nios_sys", label: "instantiates" },
+    { source: "f_qsys_root", target: "f_nios_sys", label: "generates" },
+    { source: "f_bdf_m1", target: "f_qsys_dram", label: "embeds" },
+    { source: "f_bdf_m1", target: "f_vga_ctrl", label: "wires" },
+    { source: "f_bdf_m1", target: "f_pixel", label: "framebuffer" },
+    { source: "f_spi_int", target: "f_qsys_dram", label: "targets BSP" },
+    { source: "f_qsys_dual", target: "f_core1", label: "sopcinfo BSP" },
+    { source: "f_qsys_dual", target: "f_core2", label: "sopcinfo BSP" },
+    { source: "f_bdf_m1", target: "f_us", label: "M2 reuse" },
+    { source: "f_qsys_peri", target: "f_rtos1", label: "Core0 BSP" },
+    { source: "f_qsys_peri", target: "f_rtos2", label: "Core1 BSP" },
+    { source: "f_esp_spi", target: "f_spi_int", label: "SPI protocol" },
+    { source: "f_readme", target: "f_qsf_root", label: "documents" }
+  ],
+  testbenchNote: "No *_tb.v, *_tb.sv, or ModelSim .do scripts found. Verification is board-level + JTAG UART."
+};
+
+const TYPE_COLORS = {
+  verilog: "#bfdbfe",
+  sv: "#a5f3fc",
+  qsys: "#fed7aa",
+  quartus: "#fde68a",
+  c: "#bbf7d0",
+  ino: "#fecaca",
+  bdf: "#ddd6fe",
+  doc: "#e2e8f0",
+  top: "#fbcfe8",
+  cpu: "#bae6fd",
+  mem: "#bbf7d0",
+  peri: "#e9d5ff"
+};
+const TYPE_BORDERS = {
+  verilog: "#2563eb", sv: "#0891b2", qsys: "#ea580c", quartus: "#ca8a04",
+  c: "#059669", ino: "#dc2626", bdf: "#7c3aed", doc: "#64748b",
+  top: "#db2777", cpu: "#0284c7", mem: "#16a34a", peri: "#9333ea"
+};
+
+let cyInstances = {};
+let activeMilestone = "root";
+
+function initMermaid() {
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: "default",
+    securityLevel: "loose",
+    flowchart: { curve: "basis", padding: 16 }
+  });
+  document.querySelectorAll(".mermaid").forEach((el, i) => {
+    const id = "mmd-" + i;
+    const src = el.textContent;
+    el.removeAttribute("data-processed");
+    mermaid.render(id, src).then(({ svg }) => { el.innerHTML = svg; });
+  });
+}
+
+function baseCyStyle() {
+  return [
+    { selector: "node", style: {
+      label: "data(label)",
+      "text-valign": "center", "text-halign": "center",
+      color: "#1a2332", "font-size": "11px", "font-weight": "600",
+      "text-wrap": "wrap", "text-max-width": "110px",
+      width: "label", height: "label", padding: "12px",
+      shape: "round-rectangle",
+      "background-color": "data(color)", "border-width": 2,
+      "border-color": "data(border)", "overlay-padding": 6
+    }},
+    { selector: "edge", style: {
+      width: 2, "line-color": "#475569", "target-arrow-color": "#475569",
+      "target-arrow-shape": "triangle", "curve-style": "bezier",
+      label: "data(label)", "font-size": "9px", color: "#334155",
+      "text-background-color": "#fff", "text-background-opacity": 1,
+      "text-background-padding": "2px", "text-rotation": "autorotate"
+    }},
+    { selector: ":selected", style: { "border-width": 3, "border-color": "#1d4ed8" }}
+  ];
+}
+
+function makeCy(containerId, elements, layoutName) {
+  const el = document.getElementById(containerId);
+  const cy = cytoscape({
+    container: el,
+    elements,
+    style: baseCyStyle(),
+    layout: { name: layoutName || "cose", animate: false, padding: 40,
+      nodeRepulsion: 8000, idealEdgeLength: 90 },
+    minZoom: 0.2,
+    maxZoom: 3,
+    wheelSensitivity: 0.3
+  });
+  cy.nodes().forEach(n => n.on("mouseover", e => showTip(e, n.data("tip") || n.data("label"))));
+  cy.on("mouseout", () => hideTip());
+  cyInstances[containerId] = cy;
+  return cy;
+}
+
+const MS_NODE_SETS = {
+  root: new Set(["DE10-Lite","nios_led_test","nios_system","nios2_gen2_0","mm_interconnect_0","jtag_uart_0","onchip_memory2_0","pio_0","spi_0"]),
+  m1: new Set(["DE10-Lite","ECE3073_Lab3.bdf","nios_system_Dram","vga_controller","pixel","VGAdriver","lab3Pll","top_level","latency_counter","nios_system"]),
+  m2: new Set(["DE10-Lite","ece3073_lab6V2.bdf","dual_processor","nios2_core0","nios2_core1","sdram","vga","spi","us_counter"]),
+  m3: new Set(["DE10-Lite","ECE3073_Milestone2.bdf","DualProcessorPeri","nios2_core0","nios2_core1","shared_sdram","pixel_buffer","vga_controller","pixel","spi"])
+};
+
+function buildHierarchyElements(ms) {
+  const nodes = [
+    { data: { id: "DE10-Lite", label: "DE10-Lite\nMAX 10", color: "#e2e8f0", border: "#475569", tip: "Target FPGA board" }},
+    { data: { id: "nios_led_test", label: "nios_led_test", color: TYPE_COLORS.top, border: TYPE_BORDERS.top, tip: PROJECT_DATA.modules[0].desc }},
+    { data: { id: "nios_system", label: "nios_system", color: TYPE_COLORS.qsys, border: TYPE_BORDERS.qsys, tip: "Single-core Qsys" }},
+    { data: { id: "nios2_gen2_0", label: "nios2_gen2_0", color: TYPE_COLORS.cpu, border: TYPE_BORDERS.cpu, tip: "Nios II Gen2 CPU" }},
+    { data: { id: "mm_interconnect_0", label: "Avalon-MM\nInterconnect", color: "#e2e8f0", border: "#475569", tip: "Memory-mapped bus" }},
+    { data: { id: "jtag_uart_0", label: "JTAG UART", color: TYPE_COLORS.peri, border: TYPE_BORDERS.peri, tip: "stdio / debug" }},
+    { data: { id: "onchip_memory2_0", label: "On-Chip\nMemory", color: TYPE_COLORS.mem, border: TYPE_BORDERS.mem, tip: "Program RAM" }},
+    { data: { id: "pio_0", label: "LED PIO", color: TYPE_COLORS.peri, border: TYPE_BORDERS.peri, tip: "led_export[9:0]" }},
+    { data: { id: "spi_0", label: "SPI Master", color: TYPE_COLORS.peri, border: TYPE_BORDERS.peri, tip: "Accelerometer / vision SPI" }},
+    { data: { id: "top_level", label: "top_level (M1)", color: TYPE_COLORS.top, border: TYPE_BORDERS.top, tip: "Latency + Nios lab top" }},
+    { data: { id: "latency_counter", label: "latency_counter", color: TYPE_COLORS.verilog, border: TYPE_BORDERS.verilog, tip: "12-bit latency measure" }},
+    { data: { id: "vga_controller", label: "vga_controller", color: TYPE_COLORS.verilog, border: TYPE_BORDERS.verilog, tip: "VGA 320×240 timing" }},
+    { data: { id: "pixel", label: "pixel RAM", color: TYPE_COLORS.mem, border: TYPE_BORDERS.mem, tip: "Dual-port framebuffer" }},
+    { data: { id: "VGAdriver", label: "VGAdriver PLL", color: TYPE_COLORS.verilog, border: TYPE_BORDERS.verilog, tip: "Pixel clock PLL" }},
+    { data: { id: "lab3Pll", label: "lab3Pll", color: TYPE_COLORS.verilog, border: TYPE_BORDERS.verilog, tip: "System PLL" }},
+    { data: { id: "ECE3073_Lab3.bdf", label: "ECE3073_Lab3", color: TYPE_COLORS.bdf, border: TYPE_BORDERS.bdf, tip: "M1 block diagram top" }},
+    { data: { id: "nios_system_Dram", label: "nios_system_Dram", color: TYPE_COLORS.qsys, border: TYPE_BORDERS.qsys, tip: "M1 Qsys + SDRAM" }},
+    { data: { id: "ece3073_lab6V2.bdf", label: "ece3073_lab6V2", color: TYPE_COLORS.bdf, border: TYPE_BORDERS.bdf, tip: "M2 BDF top" }},
+    { data: { id: "dual_processor", label: "dual_processor", color: TYPE_COLORS.qsys, border: TYPE_BORDERS.qsys, tip: "Dual-core Qsys M2" }},
+    { data: { id: "us_counter", label: "us_counter", color: TYPE_COLORS.verilog, border: TYPE_BORDERS.verilog, tip: "µs timestamp IP" }},
+    { data: { id: "nios2_core0", label: "Nios II\nCore 0", color: TYPE_COLORS.cpu, border: TYPE_BORDERS.cpu, tip: "Matrix / control CPU" }},
+    { data: { id: "nios2_core1", label: "Nios II\nCore 1", color: TYPE_COLORS.cpu, border: TYPE_BORDERS.cpu, tip: "VGA / Morse / vision CPU" }},
+    { data: { id: "sdram", label: "SDRAM Ctrl", color: TYPE_COLORS.mem, border: TYPE_BORDERS.mem, tip: "Shared external SDRAM" }},
+    { data: { id: "vga", label: "VGA IF", color: TYPE_COLORS.peri, border: TYPE_BORDERS.peri, tip: "RGB HS VS" }},
+    { data: { id: "spi", label: "SPI", color: TYPE_COLORS.peri, border: TYPE_BORDERS.peri, tip: "ESP32 / Grove" }},
+    { data: { id: "ECE3073_Milestone2.bdf", label: "ECE3073_M2", color: TYPE_COLORS.bdf, border: TYPE_BORDERS.bdf, tip: "M3 BDF top" }},
+    { data: { id: "DualProcessorPeri", label: "DualProcessorPeri", color: TYPE_COLORS.qsys, border: TYPE_BORDERS.qsys, tip: "Final dual-core system" }},
+    { data: { id: "shared_sdram", label: "shared_sdram", color: TYPE_COLORS.mem, border: TYPE_BORDERS.mem, tip: "Matrix + flags in SDRAM" }},
+    { data: { id: "pixel_buffer", label: "pixel_buffer PIO", color: TYPE_COLORS.peri, border: TYPE_BORDERS.peri, tip: "CPU writes pixels to fabric" }}
+  ];
+  const allowed = MS_NODE_SETS[ms] || MS_NODE_SETS.root;
+  const filteredNodes = nodes.filter(n => allowed.has(n.data.id));
+  const ids = new Set(filteredNodes.map(n => n.data.id));
+  const edges = PROJECT_DATA.hierarchyEdges
+    .filter(e => ids.has(e.source) && ids.has(e.target))
+    .map((e, i) => ({
+      data: { id: "he" + ms + i, source: e.source, target: e.target, label: e.label || "" }
+    }));
+  return { nodes: filteredNodes, edges };
+}
+
+function buildSignalElements() {
+  const seen = {};
+  const nodes = [];
+  PROJECT_DATA.signalFlow.forEach((s, i) => {
+    [s.source, s.target].forEach(name => {
+      const id = "sn_" + name.replace(/[^a-zA-Z0-9]/g, "_");
+      if (!seen[id]) {
+        seen[id] = true;
+        nodes.push({
+          data: {
+            id, label: name,
+            color: name.includes("Nios") || name.includes("Core") ? TYPE_COLORS.cpu : "#e2e8f0",
+            border: "#475569", tip: name
+          }
+        });
+      }
+    });
+  });
+  const edges = PROJECT_DATA.signalFlow.map((s, i) => ({
+    data: {
+      id: "sfe" + i,
+      source: "sn_" + s.source.replace(/[^a-zA-Z0-9]/g, "_"),
+      target: "sn_" + s.target.replace(/[^a-zA-Z0-9]/g, "_"),
+      label: s.label
+    }
+  }));
+  return { nodes, edges };
+}
+
+function buildFileElements() {
+  const nodes = PROJECT_DATA.fileNodes.map(f => ({
+    data: {
+      id: f.id, label: f.label,
+      color: TYPE_COLORS[f.type] || "#e2e8f0",
+      border: TYPE_BORDERS[f.type] || "#64748b",
+      tip: f.path + " (" + f.type + ")"
+    }
+  }));
+  const edges = PROJECT_DATA.fileEdges.map((e, i) => ({
+    data: { id: "fe" + i, source: e.source, target: e.target, label: e.label }
+  }));
+  return { nodes, edges };
+}
+
+function showTip(evt, text) {
+  const tt = document.getElementById("tooltip");
+  tt.style.display = "block";
+  tt.textContent = text;
+  tt.style.left = (evt.originalEvent?.clientX || evt.clientX) + 12 + "px";
+  tt.style.top = (evt.originalEvent?.clientY || evt.clientY) + 12 + "px";
+}
+function hideTip() { document.getElementById("tooltip").style.display = "none"; }
+
+function fillTables() {
+  document.getElementById("statModules").textContent = PROJECT_DATA.modules.length;
+  const ct = document.getElementById("clockTable");
+  PROJECT_DATA.clocks.forEach(c => {
+    ct.innerHTML += `<tr><td><code>${c.domain}</code></td><td>${c.source}</td><td>${c.consumers}</td></tr>`;
+  });
+  const bt = document.getElementById("busTable");
+  PROJECT_DATA.buses.forEach(b => {
+    bt.innerHTML += `<tr><td><code>${b.name}</code></td><td>${b.width}</td><td>${b.role}</td></tr>`;
+  });
+  const qt = document.getElementById("quartusTable");
+  PROJECT_DATA.quartusProjects.forEach(q => {
+    qt.innerHTML += `<tr><td>${q.folder}</td><td><code>${q.project}</code></td><td>${q.top}</td><td><code>${q.qsys}</code></td></tr>`;
+  });
+  const st = document.getElementById("swTable");
+  PROJECT_DATA.software.forEach(s => {
+    st.innerHTML += `<tr><td><code>${s.app}</code></td><td>${s.cpu}</td><td>${s.tests}</td><td>${s.peripherals}</td></tr>`;
+  });
+}
+
+function setupCyToolbar() {
+  document.querySelectorAll(".cy-toolbar button").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.cy;
+      const cy = cyInstances[id];
+      if (!cy) return;
+      const a = btn.dataset.action;
+      if (a === "zoom-in") cy.zoom(cy.zoom() * 1.2);
+      if (a === "zoom-out") cy.zoom(cy.zoom() / 1.2);
+      if (a === "fit") cy.fit(undefined, 40);
+    });
+  });
+}
+
+function setupHierarchyClick(cy) {
+  cy.on("tap", "node", evt => {
+    const n = evt.target;
+    const panel = document.getElementById("hierDetail");
+    const mod = PROJECT_DATA.modules.find(m => m.id === n.id());
+  const files = PROJECT_DATA.fileNodes.filter(f => f.label.toLowerCase().includes(n.id().toLowerCase().replace(".bdf","")));
+    panel.classList.add("visible");
+    panel.innerHTML = `<h3>${n.data("label")}</h3>
+      <p style="color:var(--muted);font-size:0.85rem">${n.data("tip") || ""}</p>
+      ${mod ? `<p><strong>File:</strong> <code>${mod.file}</code></p><p><strong>Instantiates:</strong> ${mod.children.length ? mod.children.join(", ") : "—"}</p>` : ""}
+      ${files.length ? `<div class="file-list"><strong>Related files:</strong><br>${files.map(f=>`<code>${f.path}</code>`).join("<br>")}</div>` : ""}
+      <pre>${PROJECT_DATA.testbenchNote}</pre>`;
+  });
+}
+
+function setupFileClick(cy) {
+  cy.on("tap", "node", evt => {
+    const n = evt.target;
+    const f = PROJECT_DATA.fileNodes.find(x => x.id === n.id());
+    const panel = document.getElementById("fileDetail");
+    if (!f) return;
+    panel.classList.add("visible");
+    const deps = PROJECT_DATA.fileEdges.filter(e => e.source === f.id || e.target === f.id);
+    panel.innerHTML = `<h3>${f.label}</h3><p><code>${f.path}</code></p>
+      <p style="margin-top:0.5rem"><span class="badge badge-${f.type === 'verilog' ? 'v' : f.type === 'c' ? 'c' : f.type === 'ino' ? 'ino' : 'q'}">${f.type}</span></p>
+      <p style="margin-top:0.5rem;color:var(--muted);font-size:0.85rem"><strong>Dependencies:</strong></p>
+      <ul class="compact">${deps.map(d => `<li>${d.source === f.id ? "→ " + d.target : d.source + " →"} (${d.label})</li>`).join("") || "<li>None listed</li>"}</ul>`;
+  });
+}
+
+function rebuildHierarchy(ms) {
+  activeMilestone = ms;
+  const { nodes, edges } = buildHierarchyElements(ms);
+  const cy = cyInstances.cyHierarchy;
+  if (cy) {
+    cy.elements().remove();
+    cy.add(nodes);
+    cy.add(edges);
+    cy.layout({ name: "cose", animate: false, padding: 40 }).run();
+    cy.fit(undefined, 40);
+  }
+}
+
+document.getElementById("fitAll").addEventListener("click", () => {
+  Object.values(cyInstances).forEach(cy => cy.fit(undefined, 40));
+});
+
+document.querySelectorAll("#milestoneTabs button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("#milestoneTabs button").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    rebuildHierarchy(btn.dataset.ms);
+  });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  fillTables();
+  const hier = buildHierarchyElements("root");
+  const cyH = makeCy("cyHierarchy", [...hier.nodes, ...hier.edges], "cose");
+  setupHierarchyClick(cyH);
+
+  const sig = buildSignalElements();
+  makeCy("cySignals", [...sig.nodes, ...sig.edges], "circle");
+
+  const fil = buildFileElements();
+  const cyF = makeCy("cyFiles", [...fil.nodes, ...fil.edges], "breadthfirst");
+  setupFileClick(cyF);
+
+  setupCyToolbar();
+  initMermaid();
+
+  document.getElementById("hierLegend").innerHTML = `
+    <span><i style="background:${TYPE_COLORS.top}"></i> Top / BDF</span>
+    <span><i style="background:${TYPE_COLORS.qsys}"></i> Qsys subsystem</span>
+    <span><i style="background:${TYPE_COLORS.cpu}"></i> Nios II core</span>
+    <span><i style="background:${TYPE_COLORS.verilog}"></i> Custom Verilog</span>
+    <span><i style="background:${TYPE_COLORS.mem}"></i> Memory</span>
+    <span><i style="background:${TYPE_COLORS.peri}"></i> Peripheral</span>`;
+});
+</script>
+</body>
+</html>
