@@ -53,6 +53,8 @@ Open the `.qpf` (Quartus Project File) in Intel Quartus Prime.
 2. Once compilation completes successfully, connect the DE10-Lite board via USB.
 3. Open **Tools → Programmer**, ensure the USB-Blaster is detected, load the generated `.sof` file, and click **Start** to program the FPGA.
 
+**MAKE SURE USING THE TIME LIMITED SOF** <sofname>_time_limited.sof
+
 <img width="802" height="639" alt="image" src="https://github.com/user-attachments/assets/886f3de9-5846-4a3e-9abc-483fad2c67da" />
 
 
