@@ -26,12 +26,6 @@
 #define SDRAM_2       				0x01200000
 
 
-//volatile int *Keys       = (int *)KEY01_BASE;
-
-//volatile int *Mutex      = (int *)MUTEX_BASE;
-//volatile int *Shared_Sdram_Flag      = (int *)SHARED_SDRAM_BASE;
-//volatile int *Shared_Sdram_1      = (int *)SDRAM_1;
-//volatile int *Shared_Sdram_2      = (int *)SDRAM_2;
 volatile int *Mutex               = (volatile int *) (MUTEX_BASE | 0x80000000);
 volatile int *Shared_Sdram_Flag   = (volatile int *) (SHARED_SDRAM_BASE | 0x80000000);
 volatile int *Shared_Sdram_1      = (volatile int *) (SDRAM_1 | 0x80000000);
@@ -42,19 +36,6 @@ volatile int *Shared_Sdram_2      = (volatile int *) (SDRAM_2 | 0x80000000);
 #define HEX012_BASE 0x21030
 #define FRAMEBUFFER_BASE  0x01300000   // pick a free region
 
-//
-//HEX345_BASE
-
-//volatile int *timer      = (int *)US_COUNTER_BASE;
-//volatile int *OutPort_HEX012      = (int *)HEX012_BASE;
-//volatile int *OutPort_HEX345      = (int *)HEX345_BASE;
-//volatile int *ACCEL      = (int *)ACCELEROMETER_SPI_0_BASE;
-//volatile int *SPI_RxData  = (int *) SPI_0_BASE;
-//volatile int *SPI_TxData  = (int *) (SPI_0_BASE + 0x4);
-//volatile int *SPI_Status  = (int *) (SPI_0_BASE + 0x8);
-//volatile int *SPI_Control = (int *) (SPI_0_BASE + 0xC);
-//volatile int *SPI_SS      = (int *)SPI_SS_BASE;
-
 volatile int *timer               = (volatile int *) (US_COUNTER_BASE | 0x80000000);
 volatile int *OutPort_HEX012      = (volatile int *) (HEX345_BASE | 0x80000000);
 volatile int *OutPort_HEX345      = (volatile int *) (HEX012_BASE| 0x80000000);
@@ -64,7 +45,6 @@ volatile int *SPI_TxData          = (volatile int *) ((SPI_0_BASE + 0x4) | 0x800
 volatile int *SPI_Status          = (volatile int *) ((SPI_0_BASE + 0x8) | 0x80000000);
 volatile int *SPI_Control         = (volatile int *) ((SPI_0_BASE + 0xC) | 0x80000000);
 volatile int *SPI_SS              = (volatile int *) (SPI_SS_BASE | 0x80000000);
-
 
 #define SPI_STATUS_ADDR SPI_Status
 #define SPI_RXDATA_ADDR SPI_RxData
@@ -902,11 +882,9 @@ void process_complete_reading(const char *reading, alt_mutex_dev* mutex)
 
     strcpy(last_printed_reading, reading);
 
-//    display_reading_on_leds(reading);
 
     if (reading[0] == NO_READING_BYTE && reading[1] == '\0') {
         printf("Water meter: NO DETECTION\n");
-//        speaker_off();
         return;
     }
 
@@ -941,11 +919,6 @@ void process_complete_reading(const char *reading, alt_mutex_dev* mutex)
 		//end_time = IORD_32DIRECT(timer, 0);
 		//printf("VGA Time(us): %u\n\n",(unsigned int)(end_time-start_time));
 //		send_to_core1_int(0x30,1);
-
-
-//		altera_avalon_mutex_lock(mutex, 2);
-//		IOWR_16DIRECT(reading,0x30,reading);
-//		altera_avalon_mutex_unlock(mutex);
 
 		usleep(10000);
 
@@ -1081,8 +1054,6 @@ void handle_key1_store(void)
 
     resume_spi_reading_after_action_window();
 }
-
-
 
 /* ---------------- Emergency stop ---------------- */
 
@@ -1387,10 +1358,6 @@ int main(void)
 		curr_key0 = keyBase & 0x1;
 		curr_key1 = (keyBase & 0x2);
 
-//		usleep(5000);
-//		printf("0:%u\n",curr_key0);
-//		usleep(5000);
-//		printf("1:%u\n",curr_key1);
 		if (sw2==0){
 		if (sw0 == 1)
 		{
@@ -1406,8 +1373,6 @@ int main(void)
 
 		else if (sw1 == 2)
 			{
-//			const char *reading="12345";
-//			strncpy(current_5digit_reading, reading,5);
 			if (current_5digit_reading[0] != '\0') {
 				hex_scroll_string(current_5digit_reading);
 				}
@@ -1435,9 +1400,9 @@ int main(void)
 
 		if ((curr_key1==2) & (prev_key1==0))
 		{
-			char* current_5digit_reading_test="12345";
-			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading_test);
-//			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading);
+			// char* current_5digit_reading_test="12345";
+			// uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading_test);
+			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading);
 //			handle_key1_store();
 			printf("key1\n");
 			altera_avalon_mutex_lock(mutex, 2);
