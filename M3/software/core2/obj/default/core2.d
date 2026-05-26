@@ -17,7 +17,8 @@ obj/default/core2.o: core2.c ../core2_bsp/system.h ../core2_bsp/linker.h \
  ../core2_bsp//HAL/inc/priv/alt_no_error.h \
  ../core2_bsp//drivers/inc/altera_up_avalon_accelerometer_spi.h \
  ../core2_bsp//drivers/inc/altera_up_avalon_accelerometer_spi_regs.h \
- sdram.h hex.h accelerometer.h nios2_ctrl_reg_macros.h
+ sdram.h hex.h accelerometer.h nios2_ctrl_reg_macros.h dashboard.h \
+ camera.h
 
 ../core2_bsp/system.h:
 
@@ -72,3 +73,7 @@ hex.h:
 accelerometer.h:
 
 nios2_ctrl_reg_macros.h:
+
+dashboard.h:
+
+camera.h:

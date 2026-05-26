@@ -19,6 +19,8 @@
 #include "hex.h"
 #include "accelerometer.h"
 #include "nios2_ctrl_reg_macros.h"
+#include "dashboard.h"
+#include "camera.h"
 
 
 
@@ -26,6 +28,12 @@
 #define SDRAM_2       				0x01200000
 
 
+//volatile int *Keys       = (int *)KEY01_BASE;
+
+//volatile int *Mutex      = (int *)MUTEX_BASE;
+//volatile int *Shared_Sdram_Flag      = (int *)SHARED_SDRAM_BASE;
+//volatile int *Shared_Sdram_1      = (int *)SDRAM_1;
+//volatile int *Shared_Sdram_2      = (int *)SDRAM_2;
 volatile int *Mutex               = (volatile int *) (MUTEX_BASE | 0x80000000);
 volatile int *Shared_Sdram_Flag   = (volatile int *) (SHARED_SDRAM_BASE | 0x80000000);
 volatile int *Shared_Sdram_1      = (volatile int *) (SDRAM_1 | 0x80000000);
@@ -35,6 +43,19 @@ volatile int *Shared_Sdram_2      = (volatile int *) (SDRAM_2 | 0x80000000);
 #define HEX345_BASE 0x21020
 #define HEX012_BASE 0x21030
 #define FRAMEBUFFER_BASE  0x01300000   // pick a free region
+
+//
+//HEX345_BASE
+
+//volatile int *timer      = (int *)US_COUNTER_BASE;
+//volatile int *OutPort_HEX012      = (int *)HEX012_BASE;
+//volatile int *OutPort_HEX345      = (int *)HEX345_BASE;
+//volatile int *ACCEL      = (int *)ACCELEROMETER_SPI_0_BASE;
+//volatile int *SPI_RxData  = (int *) SPI_0_BASE;
+//volatile int *SPI_TxData  = (int *) (SPI_0_BASE + 0x4);
+//volatile int *SPI_Status  = (int *) (SPI_0_BASE + 0x8);
+//volatile int *SPI_Control = (int *) (SPI_0_BASE + 0xC);
+//volatile int *SPI_SS      = (int *)SPI_SS_BASE;
 
 volatile int *timer               = (volatile int *) (US_COUNTER_BASE | 0x80000000);
 volatile int *OutPort_HEX012      = (volatile int *) (HEX345_BASE | 0x80000000);
@@ -46,6 +67,7 @@ volatile int *SPI_Status          = (volatile int *) ((SPI_0_BASE + 0x8) | 0x800
 volatile int *SPI_Control         = (volatile int *) ((SPI_0_BASE + 0xC) | 0x80000000);
 volatile int *SPI_SS              = (volatile int *) (SPI_SS_BASE | 0x80000000);
 
+
 #define SPI_STATUS_ADDR SPI_Status
 #define SPI_RXDATA_ADDR SPI_RxData
 #define SPI_TXDATA_ADDR SPI_TxData
@@ -53,7 +75,7 @@ volatile int *SPI_SS              = (volatile int *) (SPI_SS_BASE | 0x80000000);
 #define SPI_CONTROL_ADDR SPI_Control
 #define SPI_SS_ADDR SPI_SS_BASE
 
-void accelerometer_main(float *pitch, float *roll, float *z);
+void accelerometer_main(int *pitch, int *roll, int *z);
 
 /////////////////////////////////////////////////////////////////////////
 #define VGA_WIDTH        320
@@ -358,13 +380,10 @@ void generate_text_image_to_sdram(const char *reading)
 
     /* Text */
     char safe_msg[] = "HELLO WHOEVER IS READING THIS";
-	draw_string_to_sdram(30, 60, safe_msg, 0xF, 1);
-	char safe_msg2[] = "SPI INFERRED RESULT";
-	draw_string_to_sdram(30, 95, safe_msg2, 0xE, 2);
-	char safe_msg3[6];
-	strncpy(safe_msg3, reading, sizeof(safe_msg3) - 1);
-	safe_msg3[sizeof(safe_msg3) - 1] = '\0';
-	draw_string_to_sdram(30, 125, safe_msg3, 0xC, 2);
+    draw_string_to_sdram(30, 60, safe_msg, 0xF, 1);
+    char safe_msg2[] = "SPI INFERRED RESULT";
+    draw_string_to_sdram(30, 95, safe_msg2, 0xE, 2);
+    draw_string_to_sdram(30, 125, reading, 0xC, 2);
 
 }
 
@@ -395,7 +414,6 @@ void draw_welcome_screen(void)
         sdram_set_pixel(x, VGA_HEIGHT - 1, 0xF);
         sdram_set_pixel(x, VGA_HEIGHT - 2, 0xF);
     }
-
     for (int y = 0; y < VGA_HEIGHT; y++) {
         sdram_set_pixel(0, y, 0xF);
         sdram_set_pixel(1, y, 0xF);
@@ -698,7 +716,7 @@ int is_all_digits(const char *s)
 
 int is_valid_5digit_reading(const char *reading)
 {
-    if (strlen(reading) != REQUIRED_DIGITS) {
+    if (strlen(reading) <= REQUIRED_DIGITS) {
         return 0;
     }
 
@@ -827,47 +845,47 @@ void handle_action_window_timeout(void)
 }
 
 /* ---------------- SPI interrupt service routine ---------------- */
-void spi_isr(void* context, alt_u32 id)
-{
-    uint8_t rx;
-
-    while (READ_REG(SPI_STATUS_ADDR) & RRDY) {
-
-        rx = (uint8_t)(READ_REG(SPI_RXDATA_ADDR) & 0xFF);
-
-        short_delay(SPI_SS_DELAY);
-        WRITE_REG(SPI_SS_ADDR, 0x1);
-
-        if (reading_locked_waiting_for_action) {
-            latest_spi_byte = 0;
-            spi_byte_ready = 0;
-            spi_next_byte_needed = 0;
-            return;
-        }
-
-        latest_spi_byte = rx;
-        spi_byte_ready = 1;
-
-        if (spi_running) {
-            spi_next_byte_needed = 1;
-        }
-    }
-}
+//void spi_isr(void* context, alt_u32 id)
+//{
+//    uint8_t rx;
+//
+//    while (READ_REG(SPI_STATUS_ADDR) & RRDY) {
+//
+//        rx = (uint8_t)(READ_REG(SPI_RXDATA_ADDR) & 0xFF);
+//
+//        short_delay(SPI_SS_DELAY);
+//        WRITE_REG(SPI_SS_ADDR, 0x1);
+//
+//        if (reading_locked_waiting_for_action) {
+//            latest_spi_byte = 0;
+//            spi_byte_ready = 0;
+//            spi_next_byte_needed = 0;
+//            return;
+//        }
+//
+//        latest_spi_byte = rx;
+//        spi_byte_ready = 1;
+//
+//        if (spi_running) {
+//            spi_next_byte_needed = 1;
+//        }
+//    }
+//}
 
 /* ---------------- Enable SPI interrupt ---------------- */
 
-void spi_interrupt_init(void)
-{
-    spi_flush_rx();
-
-    alt_irq_register(
-        SPI_0_IRQ,
-        NULL,
-		spi_isr
-    );
-
-    WRITE_REG(SPI_CONTROL_ADDR, SPI_CONTROL_RRDY_INT_ENABLE);
-}
+//void spi_interrupt_init(void)
+//{
+//    spi_flush_rx();
+//
+//    alt_irq_register(
+//        SPI_0_IRQ,
+//        NULL,
+//		spi_isr
+//    );
+//
+//    WRITE_REG(SPI_CONTROL_ADDR, SPI_CONTROL_RRDY_INT_ENABLE);
+//}
 
 /* ---------------- Process complete water meter reading ---------------- */
 void process_complete_reading(const char *reading, alt_mutex_dev* mutex)
@@ -882,9 +900,11 @@ void process_complete_reading(const char *reading, alt_mutex_dev* mutex)
 
     strcpy(last_printed_reading, reading);
 
+//    display_reading_on_leds(reading);
 
     if (reading[0] == NO_READING_BYTE && reading[1] == '\0') {
         printf("Water meter: NO DETECTION\n");
+//        speaker_off();
         return;
     }
 
@@ -894,8 +914,7 @@ void process_complete_reading(const char *reading, alt_mutex_dev* mutex)
 
     if (is_valid_5digit_reading(reading)) {
 
-    	strncpy(current_5digit_reading, reading, REQUIRED_DIGITS);
-    	current_5digit_reading[REQUIRED_DIGITS] = '\0';
+    	strncpy(current_5digit_reading, reading,5);
         valid_5digit_available = 1;
         reading_locked_waiting_for_action = 1;
         morse_done_waiting_for_key1 = 0;
@@ -908,17 +927,22 @@ void process_complete_reading(const char *reading, alt_mutex_dev* mutex)
 
 //        beep_short();
 //        generate_text_image_to_sdram(current_5digit_reading);
-        //uint32_t start_time, end_time;
-        //start_time = IORD_32DIRECT(timer, 0);
+        uint32_t start_time, end_time;
+        start_time = IORD_32DIRECT(timer, 0);
 
 
-        //clear_sdram_image(0x0);            // wipe SDRAM frame buffer to black
-		//generate_text_image_to_sdram(current_5digit_reading);    // build the text + background in SDRAM
-		//display_sdram_image();             // push every pixel from SDRAM to the VGA pixel buffer
+        clear_sdram_image(0x0);            // wipe SDRAM frame buffer to black
+		generate_text_image_to_sdram(current_5digit_reading);    // build the text + background in SDRAM
+		display_sdram_image();             // push every pixel from SDRAM to the VGA pixel buffer
 
-		//end_time = IORD_32DIRECT(timer, 0);
-		//printf("VGA Time(us): %u\n\n",(unsigned int)(end_time-start_time));
+		end_time = IORD_32DIRECT(timer, 0);
+		printf("VGA Time(us): %u\n\n",(unsigned int)(end_time-start_time));
 //		send_to_core1_int(0x30,1);
+
+
+//		altera_avalon_mutex_lock(mutex, 2);
+//		IOWR_16DIRECT(reading,0x30,reading);
+//		altera_avalon_mutex_unlock(mutex);
 
 		usleep(10000);
 
@@ -959,11 +983,8 @@ void process_received_byte(alt_mutex_dev* mutex)
 
         reading_buffer[reading_index] = '\0';
 
-        if (reading_index == REQUIRED_DIGITS) {
-            process_complete_reading(reading_buffer, mutex);
-        }
-        else if (reading_index > 0) {
-            printf("Discarding incomplete/misaligned frame: %s\n", reading_buffer);
+        if (reading_index > 0) {
+            process_complete_reading(reading_buffer,mutex);
         }
 
         reset_reading_buffer();
@@ -974,25 +995,21 @@ void process_received_byte(alt_mutex_dev* mutex)
         return;
     }
 
-    if (b >= '0' && b <= '9') {
+    if ((b >= '0' && b <= '9') || b == NO_READING_BYTE) {
 
-        if (reading_index < REQUIRED_DIGITS) {
+        if (reading_index < MAX_READING_LEN - 1) {
             reading_buffer[reading_index++] = (char)b;
             reading_buffer[reading_index] = '\0';
         }
         else {
-            /*
-             * More than 5 digits before newline means we are out of sync.
-             * Reset and wait for the next clean frame.
-             */
-            printf("Too many digits before newline. Resetting frame.\n");
+            printf("Reading buffer overflow. Resetting frame.\n");
             reset_reading_buffer();
         }
 
         return;
     }
 
-//    printf("Unknown SPI byte: 0x%02X\n", b);
+    printf("Unknown SPI byte: 0x%02X\n", b);
 
     reset_reading_buffer();
 }
@@ -1055,6 +1072,8 @@ void handle_key1_store(void)
     resume_spi_reading_after_action_window();
 }
 
+
+
 /* ---------------- Emergency stop ---------------- */
 
 #define TILT_THRESHOLD_DEG   60     // beyond this = dangerous tilt
@@ -1093,7 +1112,7 @@ void handle_emergency_stop(alt_mutex_dev* mutex)
     altera_avalon_mutex_unlock(mutex);
 
     // Infinite halt (latched safety)
-    while (1);
+
 }
 
 #define TRDY 0x40
@@ -1112,349 +1131,260 @@ alt_32 x_axis;
 alt_32 y_axis;
 alt_32 z_axis;
 
-#define SCREEN_W VGA_WIDTH
-#define SCREEN_H VGA_HEIGHT
+///* ---------------- Main ---------------- */
+//int main(void)
+//{
+//
+//    WRITE_REG(SPI_SS_BASE, 0x1);
+//
+//
+//    spi_flush_rx();
+//    spi_interrupt_init();
+//
+//    spi_start_water_meter_reading();
+//
+//    alt_mutex_dev* mutex=altera_avalon_mutex_open("/dev/mutex");
+//    accel = alt_up_accelerometer_spi_open_dev("/dev/accelerometer_spi_0");
+//
+//    for (int i = 0; i < 6; i++) hex_buf[i] = 0xFF;
+//    	hex_refresh();
+//
+//	float pitch=0.0f;
+//	float roll=0.0f;
+//	float z=0.0f;
+//
 
-// =====================================================
-// Switch Mapping
-// =====================================================
-// SW3 = player1
-// SW5 = player2
 
-// =====================================================
+//	dashboard_init_static();
+//
+////	alt_printf("Startup image drawn.\n");
+//	int swBase=0;
+//	int sw1;
+//	int sw2;
+//	int keyBase=0;
+//    int prev_key0=0;
+//	int prev_key1=0;
+//	int curr_key0=0;
+//    int curr_key1=0;
+//    while (1) {
+//
+//    	altera_avalon_mutex_lock(mutex, 2);
+//		swBase=IORD_16DIRECT(Shared_Sdram_Flag,0x10);
+//		keyBase=IORD_16DIRECT(Shared_Sdram_Flag,0x14);
+//    	altera_avalon_mutex_unlock(mutex);
+//
+//		sw1 = swBase & 0x1;
+//		sw2 = swBase & 0x2;
+//		curr_key0 = keyBase & 0x1;
+//		curr_key1 = (keyBase & 0x2);
+//
+////		usleep(5000);
+////		printf("0:%u\n",curr_key0);
+////		usleep(5000);
+////		printf("1:%u\n",curr_key1);
+////		dashboard_update_leds(led_state_byte);
+//		dashboard_update_switches((uint8_t)swBase);
+//		dashboard_update_keys(curr_key0, curr_key1);
+//
+//		uint8_t hex[6] = { 6,7,6,7,6,7 };
+//		dashboard_update_hex(hex);
+//
+//		/* Animate camera capture preview. Call every N iterations so it's
+//		 * not too fast. */
+//		static int scan_div = 0;
+//		if (++scan_div >= 3) { scan_div = 0; dashboard_tick_scanline(); }
+//
+//		if (sw1 == 1)
+//		{
+//			accelerometer_main(&pitch, &roll, &z);
+//
+//			check_emergency_condition((int)pitch, (int)roll, (int)z);
+//
+//			if (emergency_stop)
+//			{
+//				handle_emergency_stop(mutex);
+//			}
+//		}
+//
+//		else if (sw2 == 2)
+//			{
+//			const char *reading="12345";
+//			strncpy(current_5digit_reading, reading,5);
+//			if (current_5digit_reading[0] != '\0') {
+//				hex_scroll_string(current_5digit_reading);
+//				}
+//			}
+//
+//		else
+//		{
+//			for (int i = 0; i < 6; i++)
+//				hex_buf[i] = 0xFF;
+//
+//			hex_refresh();
+//				}
+//
+//		if ((curr_key0==1) & (prev_key0==0))
+//		{
+//			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading);
+////			handle_key1_store();
+//			printf("key0\n");
+//			altera_avalon_mutex_lock(mutex, 2);
+//			IOWR_16DIRECT(Shared_Sdram_Flag, 0x30,numeric_value);
+//			altera_avalon_mutex_unlock(mutex);
+//
+//		}
+//
+//		if ((curr_key1==2) & (prev_key1==0))
+//		{
+//			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading);
+////			handle_key1_store();
+//			printf("key1\n");
+//			altera_avalon_mutex_lock(mutex, 2);
+//			IOWR_16DIRECT(Shared_Sdram_Flag, 0x30,numeric_value);
+//			altera_avalon_mutex_unlock(mutex);
+//
+//		}
+//
+//
+//        /*
+//         * Process completed SPI byte outside ISR.
+//         */
+//        if (spi_byte_ready) {
+//        	uint32_t start_time, end_time;
+//        	start_time = IORD_32DIRECT(timer, 0);
+//
+//        	spi_byte_ready = 0;
+//        	process_received_byte(mutex);
+//
+//        	end_time = IORD_32DIRECT(timer, 0);
+//            process_received_byte(mutex);
+////            printf("spi Time(us): %u\n\n",(unsigned int)(end_time-start_time));
+//
+//        }
+//
+//        /*
+//         * Request next byte from ESP32 only while SPI is running
+//         * and the current reading is not locked.
+//         */
+//        if (!reading_locked_waiting_for_action &&
+//            spi_running &&
+//            spi_next_byte_needed) {
+//
+//            spi_next_byte_needed = 0;
+//
+//            short_delay(ESP32_QUEUE_DELAY);
+//
+//            spi_start_one_byte_transfer(0xFF);
+//        }
+//
+//        if (action_window_expired()) {
+//            handle_action_window_timeout();
+//        }
+//
+//        prev_key0=curr_key0;
+//        prev_key1=curr_key1;
+//
+//        short_delay(MAIN_LOOP_DELAY);
+//    }
+//
+//    return 0;
+//}
 
-// Colors
-#define COLOR_BG     0x0
-#define COLOR_P1     0xF
-#define COLOR_P2     0xC
-#define COLOR_BALL   0xA
 
-// Paddle
-#define PADDLE_W      6
-#define PADDLE_H      40
-#define PADDLE_SPEED  4
+// YQ TEST
+/* These are referenced by camera.c. We keep them here even though they
+ * are unused in this test, so the linker is happy. */
+//volatile int spi_running         = 0;
+//volatile int spi_next_byte_needed = 0;
+//volatile int spi_byte_ready       = 0;
 
-// Ball
-#define BALL_SIZE     6
+/* Shared SDRAM flag region used to read keys/switches (same as original). */
+#define SHARED_FLAG_BASE  ((volatile int *) (SHARED_SDRAM_BASE | 0x80000000))
 
-// =====================================================
-// Draw rectangle
-// =====================================================
-void draw_rect(int x, int y, int w, int h, unsigned char color)
+/* ---------------- SPI helpers (subset of original) ---------------- */
+
+#define READ_REG(addr)         IORD(addr, 0)
+#define WRITE_REG(addr, val)   IOWR(addr, 0, val)
+
+#define TRDY 0x40
+#define RRDY 0x80
+#define SPI_CONTROL_RRDY_INT_ENABLE 0x80
+
+
+/* ---------------- Shared SPI ISR ----------------
+ * In this minimal test it just delegates to the camera handler. */
+
+static void spi_isr(void *context, alt_u32 id)
 {
-    int i, j;
-
-    for (j = 0; j < h; j++)
-    {
-        for (i = 0; i < w; i++)
-        {
-            sdram_set_pixel(x + i, y + j, color);
+    if (camera_mode_active) {
+        camera_spi_isr_handler();
+    } else {
+        /* No water meter in this test - drain anything that arrives. */
+        while (READ_REG(SPI_Status) & RRDY) {
+            (void)(uint8_t)(READ_REG(SPI_RxData) & 0xFF);
         }
     }
 }
 
-// =====================================================
-// Pong Game Function
-// Call repeatedly inside while(1)
-// =====================================================
-void pong_game(int sw)
+static void spi_interrupt_init(void)
 {
-    // ============================================
-    // Static variables preserve game state
-    // ============================================
-    static int initialized = 0;
-
-    static int p1_y;
-    static int p2_y;
-
-    static int ball_x;
-    static int ball_y;
-
-    static int ball_dx;
-    static int ball_dy;
-
-    static int p1_x;
-    static int p2_x;
-
-    // ============================================
-    // SW0 = GAME ENABLE
-    // ============================================
-    if (!(sw & 0x4))
-    {
-        initialized = 0;
-        clear_sdram_image(0x0);
-        return;
-    }
-
-    // ============================================
-    // Initialize game once
-    // ============================================
-    if (!initialized)
-    {
-        p1_y = SCREEN_H / 2 - PADDLE_H / 2;
-        p2_y = SCREEN_H / 2 - PADDLE_H / 2;
-
-        ball_x = SCREEN_W / 2;
-        ball_y = SCREEN_H / 2;
-
-        ball_dx = 2;
-        ball_dy = 2;
-
-        p1_x = 10;
-        p2_x = SCREEN_W - 10 - PADDLE_W;
-
-        initialized = 1;
-    }
-
-    // ============================================
-    // Erase old frame
-    // ============================================
-    clear_sdram_image(0x0);
-
-    // ============================================
-    // Paddle controls
-    // ============================================
-
-    // Left paddle
-    if ((sw & 0x8)==0)
-        p1_y -= PADDLE_SPEED;
-
-    if ((sw & 0x8)==8)
-        p1_y += PADDLE_SPEED;
-
-    // Right paddle
-    if ((sw & 0x32)==0)
-        p2_y -= PADDLE_SPEED;
-
-    if ((sw & 0x32)==32)
-        p2_y += PADDLE_SPEED;
-
-    // ============================================
-    // Limit paddles
-    // ============================================
-    if (p1_y < 0)
-        p1_y = 0;
-
-    if (p1_y > SCREEN_H - PADDLE_H)
-        p1_y = SCREEN_H - PADDLE_H;
-
-    if (p2_y < 0)
-        p2_y = 0;
-
-    if (p2_y > SCREEN_H - PADDLE_H)
-        p2_y = SCREEN_H - PADDLE_H;
-
-    // ============================================
-    // Move ball
-    // ============================================
-    ball_x += ball_dx;
-    ball_y += ball_dy;
-
-    // Top/bottom collision
-    if (ball_y <= 0 || ball_y >= SCREEN_H - BALL_SIZE)
-    {
-        ball_dy = -ball_dy;
-    }
-
-    // ============================================
-    // Left paddle collision
-    // ============================================
-    if (ball_x <= p1_x + PADDLE_W &&
-        ball_y + BALL_SIZE >= p1_y &&
-        ball_y <= p1_y + PADDLE_H)
-    {
-        ball_dx = -ball_dx;
-        ball_x = p1_x + PADDLE_W + 1;
-    }
-
-    // ============================================
-    // Right paddle collision
-    // ============================================
-    if (ball_x + BALL_SIZE >= p2_x &&
-        ball_y + BALL_SIZE >= p2_y &&
-        ball_y <= p2_y + PADDLE_H)
-    {
-        ball_dx = -ball_dx;
-        ball_x = p2_x - BALL_SIZE - 1;
-    }
-
-    // ============================================
-    // Reset ball if score
-    // ============================================
-    if (ball_x < 0 || ball_x > SCREEN_W)
-    {
-        ball_x = SCREEN_W / 2;
-        ball_y = SCREEN_H / 2;
-
-        ball_dx = (rand() % 2) ? 2 : -2;
-        ball_dy = (rand() % 2) ? 2 : -2;
-    }
-
-    // ============================================
-    // Draw paddles
-    // ============================================
-    draw_rect(p1_x, p1_y,
-              PADDLE_W, PADDLE_H,
-              COLOR_P1);
-
-    draw_rect(p2_x, p2_y,
-              PADDLE_W, PADDLE_H,
-              COLOR_P2);
-
-    // ============================================
-    // Draw ball
-    // ============================================
-    draw_rect(ball_x, ball_y,
-              BALL_SIZE, BALL_SIZE,
-              COLOR_BALL);
-
-    usleep(16000);
-}
-/* ---------------- Main ---------------- */
-int main(void)
-{
-
-    WRITE_REG(SPI_SS_BASE, 0x1);
-
-
     spi_flush_rx();
+    alt_irq_register(SPI_0_IRQ, NULL, spi_isr);
+    WRITE_REG(SPI_Control, SPI_CONTROL_RRDY_INT_ENABLE);
+}
+
+/* ---------------- Main ---------------- */
+
+int main_wait(void)
+{
+    printf("CAMERA TEST MAIN START\n");
+
+    printf("DBG: writing SS\n");
+    WRITE_REG(SPI_SS_BASE, 0x1);   /* CHANGED: 0x1 = deselect (was 0x0) */
+
+    printf("DBG: flushing rx\n");
+    spi_flush_rx();
+
+    printf("DBG: enabling spi interrupt\n");
     spi_interrupt_init();
 
-    spi_start_water_meter_reading();
+//    printf("DBG: calling dashboard_init_static\n");
+//    dashboard_init_static();
 
-    alt_mutex_dev* mutex=altera_avalon_mutex_open("/dev/mutex");
-    accel = alt_up_accelerometer_spi_open_dev("/dev/accelerometer_spi_0");
+    printf("DBG: calling camera_init\n");
+    camera_init();
 
-    for (int i = 0; i < 6; i++) hex_buf[i] = 0xFF;
-    	hex_refresh();
+    printf("DBG: calling camera_enter_mode\n");
+    camera_enter_mode();
 
-	float pitch=0.0f;
-	float roll=0.0f;
-	float z=0.0f;
+    int prev_key0 = 0;
+    int curr_key0 = 0;
 
-	generate_text_image_to_sdram("Start up");    // build the text + background in SDRAM
-	display_sdram_image();             // push every pixel from SDRAM to the VGA pixel buffer
+    int keyBase = 0;
 
-//	alt_printf("Startup image drawn.\n");
-	int swBase=0;
-	int sw0;
-	int sw1;
-	int sw2;
-	int keyBase=0;
-    int prev_key0=0;
-	int prev_key1=0;
-	int curr_key0=0;
-    int curr_key1=0;
+    printf("READY. Press KEY0 to capture an image.\n");
+
     while (1) {
+        /* Read KEY state from the shared SDRAM region (same path as
+         * the original main.c).  bit0 = KEY0. */
+        keyBase   = IORD_16DIRECT(SHARED_FLAG_BASE, 0x14);
+        curr_key0 = keyBase & 0x1;
 
-    	altera_avalon_mutex_lock(mutex, 2);
-		swBase=IORD_16DIRECT(Shared_Sdram_Flag,0x10);
-		keyBase=IORD_16DIRECT(Shared_Sdram_Flag,0x14);
-    	altera_avalon_mutex_unlock(mutex);
-
-		sw0 = swBase & 0x1;
-		sw1 = swBase & 0x2;
-		sw2 = swBase & 0x4;
-		curr_key0 = keyBase & 0x1;
-		curr_key1 = (keyBase & 0x2);
-
-		if (sw2==0){
-		if (sw0 == 1)
-		{
-			accelerometer_main(&pitch, &roll, &z);
-
-			check_emergency_condition((int)pitch, (int)roll, (int)z);
-
-			if (emergency_stop)
-			{
-				handle_emergency_stop(mutex);
-			}
-		}
-
-		else if (sw1 == 2)
-			{
-			if (current_5digit_reading[0] != '\0') {
-				hex_scroll_string(current_5digit_reading);
-				}
-			}
-
-		else
-		{
-			for (int i = 0; i < 6; i++)
-				hex_buf[i] = 0xFF;
-
-			hex_refresh();
-				}
-
-		if ((curr_key0==1) & (prev_key0==0))
-		{
-			char* current_5digit_reading_test="12345";
-//			handle_key1_store();
-			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading_test);
-			printf("key0\n");
-			altera_avalon_mutex_lock(mutex, 2);
-			IOWR_16DIRECT(Shared_Sdram_Flag, 0x30,numeric_value);
-			altera_avalon_mutex_unlock(mutex);
-
-		}
-
-		if ((curr_key1==2) & (prev_key1==0))
-		{
-			// char* current_5digit_reading_test="12345";
-			// uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading_test);
-			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading);
-//			handle_key1_store();
-			printf("key1\n");
-			altera_avalon_mutex_lock(mutex, 2);
-			IOWR_16DIRECT(Shared_Sdram_Flag, 0x30,numeric_value);
-			altera_avalon_mutex_unlock(mutex);
-
-		}
-
-
-        /*
-         * Process completed SPI byte outside ISR.
-         */
-		if (spi_byte_ready) {
-		    uint32_t start_time, end_time;
-		    start_time = IORD_32DIRECT(timer, 0);
-
-		    spi_byte_ready = 0;
-		    process_received_byte(mutex);
-
-		    end_time = IORD_32DIRECT(timer, 0);
-		//  printf("spi Time(us): %u\n\n",(unsigned int)(end_time-start_time));
-		}
-
-        /*
-         * Request next byte from ESP32 only while SPI is running
-         * and the current reading is not locked.
-         */
-        if (!reading_locked_waiting_for_action &&
-            spi_running &&
-            spi_next_byte_needed) {
-
-            spi_next_byte_needed = 0;
-
-            short_delay(ESP32_QUEUE_DELAY);
-
-            spi_start_one_byte_transfer(0xFF);
+        /* Rising edge of KEY0 -> request a capture. */
+        if (curr_key0 == 1 && prev_key0 == 0) {
+            printf("KEY0 pressed -> requesting capture\n");
+            camera_trigger_capture();
         }
 
-        if (action_window_expired()) {
-            handle_action_window_timeout();
+        /* When a frame is ready, paint it into the VGA monitor box. */
+        if (camera_frame_ready) {
+            camera_debug_print_frame();      /* <-- dump bytes BEFORE render */
+            camera_render_to_dashboard();    /*     because render clears the flag */
         }
 
-        prev_key0=curr_key0;
-        prev_key1=curr_key1;
+        prev_key0 = curr_key0;
 
-        short_delay(MAIN_LOOP_DELAY);
-    }
-
-    else{
-    	pong_game(swBase);
-    }
-
+        short_delay(5000);
     }
 
     return 0;
