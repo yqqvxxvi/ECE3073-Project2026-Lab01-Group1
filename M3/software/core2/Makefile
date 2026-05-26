@@ -147,6 +147,10 @@ C_SRCS += accelerometer.c
 C_SRCS += core2.c
 C_SRCS += sdram.c
 C_SRCS += hex.c
+C_SRCS += dashboard.c
+C_SRCS += camera.c
+C_SRCS += spi_image.c
+C_SRCS += core2_test_camera_main.c
 CXX_SRCS :=
 ASM_SRCS :=
 

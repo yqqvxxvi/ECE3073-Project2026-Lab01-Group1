@@ -2,9 +2,9 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>May 21, 2026 3:08:23 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1779304103091</BspGeneratedUnixTimeStamp>
-        <BspGeneratedLocation>C:\Users\User\Downloads\ECE3073_Milestone2\software\core1_bsp</BspGeneratedLocation>
+        <BspGeneratedTimeStamp>23-May-2026 18:59:02</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1779533942584</BspGeneratedUnixTimeStamp>
+        <BspGeneratedLocation>C:\Users\mbcra\Documents\MONASH\ece3073-g1-miniproject\ECE3073-Project2026-Lab01-Group1\M3\software\core1_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>..\..\DualProcessorPeri.sopcinfo</SopcDesignFile>
         <JdiFile>default</JdiFile>

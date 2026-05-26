@@ -19,6 +19,8 @@
 #include "hex.h"
 #include "accelerometer.h"
 #include "nios2_ctrl_reg_macros.h"
+#include "dashboard.h"
+#include "camera.h"
 
 
 
@@ -73,7 +75,7 @@ volatile int *SPI_SS              = (volatile int *) (SPI_SS_BASE | 0x80000000);
 #define SPI_CONTROL_ADDR SPI_Control
 #define SPI_SS_ADDR SPI_SS_BASE
 
-void accelerometer_main(float *pitch, float *roll, float *z);
+void accelerometer_main(int *pitch, int *roll, int *z);
 
 /////////////////////////////////////////////////////////////////////////
 #define VGA_WIDTH        320
@@ -843,47 +845,47 @@ void handle_action_window_timeout(void)
 }
 
 /* ---------------- SPI interrupt service routine ---------------- */
-void spi_isr(void* context, alt_u32 id)
-{
-    uint8_t rx;
-
-    while (READ_REG(SPI_STATUS_ADDR) & RRDY) {
-
-        rx = (uint8_t)(READ_REG(SPI_RXDATA_ADDR) & 0xFF);
-
-        short_delay(SPI_SS_DELAY);
-        WRITE_REG(SPI_SS_ADDR, 0x1);
-
-        if (reading_locked_waiting_for_action) {
-            latest_spi_byte = 0;
-            spi_byte_ready = 0;
-            spi_next_byte_needed = 0;
-            return;
-        }
-
-        latest_spi_byte = rx;
-        spi_byte_ready = 1;
-
-        if (spi_running) {
-            spi_next_byte_needed = 1;
-        }
-    }
-}
+//void spi_isr(void* context, alt_u32 id)
+//{
+//    uint8_t rx;
+//
+//    while (READ_REG(SPI_STATUS_ADDR) & RRDY) {
+//
+//        rx = (uint8_t)(READ_REG(SPI_RXDATA_ADDR) & 0xFF);
+//
+//        short_delay(SPI_SS_DELAY);
+//        WRITE_REG(SPI_SS_ADDR, 0x1);
+//
+//        if (reading_locked_waiting_for_action) {
+//            latest_spi_byte = 0;
+//            spi_byte_ready = 0;
+//            spi_next_byte_needed = 0;
+//            return;
+//        }
+//
+//        latest_spi_byte = rx;
+//        spi_byte_ready = 1;
+//
+//        if (spi_running) {
+//            spi_next_byte_needed = 1;
+//        }
+//    }
+//}
 
 /* ---------------- Enable SPI interrupt ---------------- */
 
-void spi_interrupt_init(void)
-{
-    spi_flush_rx();
-
-    alt_irq_register(
-        SPI_0_IRQ,
-        NULL,
-		spi_isr
-    );
-
-    WRITE_REG(SPI_CONTROL_ADDR, SPI_CONTROL_RRDY_INT_ENABLE);
-}
+//void spi_interrupt_init(void)
+//{
+//    spi_flush_rx();
+//
+//    alt_irq_register(
+//        SPI_0_IRQ,
+//        NULL,
+//		spi_isr
+//    );
+//
+//    WRITE_REG(SPI_CONTROL_ADDR, SPI_CONTROL_RRDY_INT_ENABLE);
+//}
 
 /* ---------------- Process complete water meter reading ---------------- */
 void process_complete_reading(const char *reading, alt_mutex_dev* mutex)
@@ -1110,7 +1112,7 @@ void handle_emergency_stop(alt_mutex_dev* mutex)
     altera_avalon_mutex_unlock(mutex);
 
     // Infinite halt (latched safety)
-    while (1);
+
 }
 
 #define TRDY 0x40
@@ -1129,148 +1131,260 @@ alt_32 x_axis;
 alt_32 y_axis;
 alt_32 z_axis;
 
-/* ---------------- Main ---------------- */
-int main(void)
+///* ---------------- Main ---------------- */
+//int main(void)
+//{
+//
+//    WRITE_REG(SPI_SS_BASE, 0x1);
+//
+//
+//    spi_flush_rx();
+//    spi_interrupt_init();
+//
+//    spi_start_water_meter_reading();
+//
+//    alt_mutex_dev* mutex=altera_avalon_mutex_open("/dev/mutex");
+//    accel = alt_up_accelerometer_spi_open_dev("/dev/accelerometer_spi_0");
+//
+//    for (int i = 0; i < 6; i++) hex_buf[i] = 0xFF;
+//    	hex_refresh();
+//
+//	float pitch=0.0f;
+//	float roll=0.0f;
+//	float z=0.0f;
+//
+
+
+//	dashboard_init_static();
+//
+////	alt_printf("Startup image drawn.\n");
+//	int swBase=0;
+//	int sw1;
+//	int sw2;
+//	int keyBase=0;
+//    int prev_key0=0;
+//	int prev_key1=0;
+//	int curr_key0=0;
+//    int curr_key1=0;
+//    while (1) {
+//
+//    	altera_avalon_mutex_lock(mutex, 2);
+//		swBase=IORD_16DIRECT(Shared_Sdram_Flag,0x10);
+//		keyBase=IORD_16DIRECT(Shared_Sdram_Flag,0x14);
+//    	altera_avalon_mutex_unlock(mutex);
+//
+//		sw1 = swBase & 0x1;
+//		sw2 = swBase & 0x2;
+//		curr_key0 = keyBase & 0x1;
+//		curr_key1 = (keyBase & 0x2);
+//
+////		usleep(5000);
+////		printf("0:%u\n",curr_key0);
+////		usleep(5000);
+////		printf("1:%u\n",curr_key1);
+////		dashboard_update_leds(led_state_byte);
+//		dashboard_update_switches((uint8_t)swBase);
+//		dashboard_update_keys(curr_key0, curr_key1);
+//
+//		uint8_t hex[6] = { 6,7,6,7,6,7 };
+//		dashboard_update_hex(hex);
+//
+//		/* Animate camera capture preview. Call every N iterations so it's
+//		 * not too fast. */
+//		static int scan_div = 0;
+//		if (++scan_div >= 3) { scan_div = 0; dashboard_tick_scanline(); }
+//
+//		if (sw1 == 1)
+//		{
+//			accelerometer_main(&pitch, &roll, &z);
+//
+//			check_emergency_condition((int)pitch, (int)roll, (int)z);
+//
+//			if (emergency_stop)
+//			{
+//				handle_emergency_stop(mutex);
+//			}
+//		}
+//
+//		else if (sw2 == 2)
+//			{
+//			const char *reading="12345";
+//			strncpy(current_5digit_reading, reading,5);
+//			if (current_5digit_reading[0] != '\0') {
+//				hex_scroll_string(current_5digit_reading);
+//				}
+//			}
+//
+//		else
+//		{
+//			for (int i = 0; i < 6; i++)
+//				hex_buf[i] = 0xFF;
+//
+//			hex_refresh();
+//				}
+//
+//		if ((curr_key0==1) & (prev_key0==0))
+//		{
+//			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading);
+////			handle_key1_store();
+//			printf("key0\n");
+//			altera_avalon_mutex_lock(mutex, 2);
+//			IOWR_16DIRECT(Shared_Sdram_Flag, 0x30,numeric_value);
+//			altera_avalon_mutex_unlock(mutex);
+//
+//		}
+//
+//		if ((curr_key1==2) & (prev_key1==0))
+//		{
+//			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading);
+////			handle_key1_store();
+//			printf("key1\n");
+//			altera_avalon_mutex_lock(mutex, 2);
+//			IOWR_16DIRECT(Shared_Sdram_Flag, 0x30,numeric_value);
+//			altera_avalon_mutex_unlock(mutex);
+//
+//		}
+//
+//
+//        /*
+//         * Process completed SPI byte outside ISR.
+//         */
+//        if (spi_byte_ready) {
+//        	uint32_t start_time, end_time;
+//        	start_time = IORD_32DIRECT(timer, 0);
+//
+//        	spi_byte_ready = 0;
+//        	process_received_byte(mutex);
+//
+//        	end_time = IORD_32DIRECT(timer, 0);
+//            process_received_byte(mutex);
+////            printf("spi Time(us): %u\n\n",(unsigned int)(end_time-start_time));
+//
+//        }
+//
+//        /*
+//         * Request next byte from ESP32 only while SPI is running
+//         * and the current reading is not locked.
+//         */
+//        if (!reading_locked_waiting_for_action &&
+//            spi_running &&
+//            spi_next_byte_needed) {
+//
+//            spi_next_byte_needed = 0;
+//
+//            short_delay(ESP32_QUEUE_DELAY);
+//
+//            spi_start_one_byte_transfer(0xFF);
+//        }
+//
+//        if (action_window_expired()) {
+//            handle_action_window_timeout();
+//        }
+//
+//        prev_key0=curr_key0;
+//        prev_key1=curr_key1;
+//
+//        short_delay(MAIN_LOOP_DELAY);
+//    }
+//
+//    return 0;
+//}
+
+
+// YQ TEST
+/* These are referenced by camera.c. We keep them here even though they
+ * are unused in this test, so the linker is happy. */
+//volatile int spi_running         = 0;
+//volatile int spi_next_byte_needed = 0;
+//volatile int spi_byte_ready       = 0;
+
+/* Shared SDRAM flag region used to read keys/switches (same as original). */
+#define SHARED_FLAG_BASE  ((volatile int *) (SHARED_SDRAM_BASE | 0x80000000))
+
+/* ---------------- SPI helpers (subset of original) ---------------- */
+
+#define READ_REG(addr)         IORD(addr, 0)
+#define WRITE_REG(addr, val)   IOWR(addr, 0, val)
+
+#define TRDY 0x40
+#define RRDY 0x80
+#define SPI_CONTROL_RRDY_INT_ENABLE 0x80
+
+
+/* ---------------- Shared SPI ISR ----------------
+ * In this minimal test it just delegates to the camera handler. */
+
+static void spi_isr(void *context, alt_u32 id)
 {
+    if (camera_mode_active) {
+        camera_spi_isr_handler();
+    } else {
+        /* No water meter in this test - drain anything that arrives. */
+        while (READ_REG(SPI_Status) & RRDY) {
+            (void)(uint8_t)(READ_REG(SPI_RxData) & 0xFF);
+        }
+    }
+}
 
-    WRITE_REG(SPI_SS_BASE, 0x1);
-
-
+static void spi_interrupt_init(void)
+{
     spi_flush_rx();
+    alt_irq_register(SPI_0_IRQ, NULL, spi_isr);
+    WRITE_REG(SPI_Control, SPI_CONTROL_RRDY_INT_ENABLE);
+}
+
+/* ---------------- Main ---------------- */
+
+int main_wait(void)
+{
+    printf("CAMERA TEST MAIN START\n");
+
+    printf("DBG: writing SS\n");
+    WRITE_REG(SPI_SS_BASE, 0x1);   /* CHANGED: 0x1 = deselect (was 0x0) */
+
+    printf("DBG: flushing rx\n");
+    spi_flush_rx();
+
+    printf("DBG: enabling spi interrupt\n");
     spi_interrupt_init();
 
-    spi_start_water_meter_reading();
+//    printf("DBG: calling dashboard_init_static\n");
+//    dashboard_init_static();
 
-    alt_mutex_dev* mutex=altera_avalon_mutex_open("/dev/mutex");
-    accel = alt_up_accelerometer_spi_open_dev("/dev/accelerometer_spi_0");
+    printf("DBG: calling camera_init\n");
+    camera_init();
 
-    for (int i = 0; i < 6; i++) hex_buf[i] = 0xFF;
-    	hex_refresh();
+    printf("DBG: calling camera_enter_mode\n");
+    camera_enter_mode();
 
-	float pitch=0.0f;
-	float roll=0.0f;
-	float z=0.0f;
+    int prev_key0 = 0;
+    int curr_key0 = 0;
 
-	generate_text_image_to_sdram("Start up");    // build the text + background in SDRAM
-	display_sdram_image();             // push every pixel from SDRAM to the VGA pixel buffer
+    int keyBase = 0;
 
-//	alt_printf("Startup image drawn.\n");
-	int swBase=0;
-	int sw1;
-	int sw2;
-	int keyBase=0;
-    int prev_key0=0;
-	int prev_key1=0;
-	int curr_key0=0;
-    int curr_key1=0;
+    printf("READY. Press KEY0 to capture an image.\n");
+
     while (1) {
+        /* Read KEY state from the shared SDRAM region (same path as
+         * the original main.c).  bit0 = KEY0. */
+        keyBase   = IORD_16DIRECT(SHARED_FLAG_BASE, 0x14);
+        curr_key0 = keyBase & 0x1;
 
-    	altera_avalon_mutex_lock(mutex, 2);
-		swBase=IORD_16DIRECT(Shared_Sdram_Flag,0x10);
-		keyBase=IORD_16DIRECT(Shared_Sdram_Flag,0x14);
-    	altera_avalon_mutex_unlock(mutex);
-
-		sw1 = swBase & 0x1;
-		sw2 = swBase & 0x2;
-		curr_key0 = keyBase & 0x1;
-		curr_key1 = (keyBase & 0x2);
-
-//		usleep(5000);
-//		printf("0:%u\n",curr_key0);
-//		usleep(5000);
-//		printf("1:%u\n",curr_key1);
-
-		if (sw1 == 1)
-		{
-			accelerometer_main(&pitch, &roll, &z);
-
-			check_emergency_condition((int)pitch, (int)roll, (int)z);
-
-			if (emergency_stop)
-			{
-				handle_emergency_stop(mutex);
-			}
-		}
-
-		else if (sw2 == 2)
-			{
-			const char *reading="12345";
-			strncpy(current_5digit_reading, reading,5);
-			if (current_5digit_reading[0] != '\0') {
-				hex_scroll_string(current_5digit_reading);
-				}
-			}
-
-		else
-		{
-			for (int i = 0; i < 6; i++)
-				hex_buf[i] = 0xFF;
-
-			hex_refresh();
-				}
-
-		if ((curr_key0==1) & (prev_key0==0))
-		{
-			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading);
-//			handle_key1_store();
-			printf("key0\n");
-			altera_avalon_mutex_lock(mutex, 2);
-			IOWR_16DIRECT(Shared_Sdram_Flag, 0x30,numeric_value);
-			altera_avalon_mutex_unlock(mutex);
-
-		}
-
-		if ((curr_key1==2) & (prev_key1==0))
-		{
-			uint16_t numeric_value = (uint16_t)atoi(current_5digit_reading);
-//			handle_key1_store();
-			printf("key1\n");
-			altera_avalon_mutex_lock(mutex, 2);
-			IOWR_16DIRECT(Shared_Sdram_Flag, 0x30,numeric_value);
-			altera_avalon_mutex_unlock(mutex);
-
-		}
-
-
-        /*
-         * Process completed SPI byte outside ISR.
-         */
-        if (spi_byte_ready) {
-        	uint32_t start_time, end_time;
-        	start_time = IORD_32DIRECT(timer, 0);
-
-        	spi_byte_ready = 0;
-        	process_received_byte(mutex);
-
-        	end_time = IORD_32DIRECT(timer, 0);
-            process_received_byte(mutex);
-//            printf("spi Time(us): %u\n\n",(unsigned int)(end_time-start_time));
-
+        /* Rising edge of KEY0 -> request a capture. */
+        if (curr_key0 == 1 && prev_key0 == 0) {
+            printf("KEY0 pressed -> requesting capture\n");
+            camera_trigger_capture();
         }
 
-        /*
-         * Request next byte from ESP32 only while SPI is running
-         * and the current reading is not locked.
-         */
-        if (!reading_locked_waiting_for_action &&
-            spi_running &&
-            spi_next_byte_needed) {
-
-            spi_next_byte_needed = 0;
-
-            short_delay(ESP32_QUEUE_DELAY);
-
-            spi_start_one_byte_transfer(0xFF);
+        /* When a frame is ready, paint it into the VGA monitor box. */
+        if (camera_frame_ready) {
+            camera_debug_print_frame();      /* <-- dump bytes BEFORE render */
+            camera_render_to_dashboard();    /*     because render clears the flag */
         }
 
-        if (action_window_expired()) {
-            handle_action_window_timeout();
-        }
+        prev_key0 = curr_key0;
 
-        prev_key0=curr_key0;
-        prev_key1=curr_key1;
-
-        short_delay(MAIN_LOOP_DELAY);
+        short_delay(5000);
     }
 
     return 0;
